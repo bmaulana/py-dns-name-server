@@ -1,0 +1,824 @@
+1.
+
+60 bmaulana@carpals-linux% dig @199.19.56.1 www.xorp.org. +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @199.19.56.1 www.xorp.org. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 57163
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 2, ADDITIONAL: 3
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;www.xorp.org.			IN	A
+
+;; AUTHORITY SECTION:
+xorp.org.		86400	IN	NS	ns.xorp.org.
+xorp.org.		86400	IN	NS	ns2.xorp.org.
+
+;; ADDITIONAL SECTION:
+ns.xorp.org.		86400	IN	A	128.16.70.254
+ns2.xorp.org.		86400	IN	A	193.63.58.145
+
+;; Query time: 238 msec
+;; SERVER: 199.19.56.1#53(199.19.56.1)
+;; WHEN: Thu Nov 10 14:14:47 GMT 2016
+;; MSG SIZE  rcvd: 108
+
+61 bmaulana@carpals-linux% dig @128.16.70.254 www.xorp.org. +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @128.16.70.254 www.xorp.org. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 48306
+;; flags: qr aa; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 3
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;www.xorp.org.			IN	A
+
+;; ANSWER SECTION:
+www.xorp.org.		3600	IN	A	208.74.158.171
+
+;; AUTHORITY SECTION:
+xorp.org.		3600	IN	NS	ns2.xorp.org.
+xorp.org.		3600	IN	NS	ns.xorp.org.
+
+;; ADDITIONAL SECTION:
+ns.xorp.org.		3600	IN	A	128.16.70.254
+ns2.xorp.org.		3600	IN	A	193.63.58.145
+
+;; Query time: 1 msec
+;; SERVER: 128.16.70.254#53(128.16.70.254)
+;; WHEN: Thu Nov 10 14:15:25 GMT 2016
+;; MSG SIZE  rcvd: 124
+
+2.
+
+65 bmaulana@carpals-linux% dig @199.7.83.42 newgate.cs.ucl.ac.uk. +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @199.7.83.42 newgate.cs.ucl.ac.uk. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 54733
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 8, ADDITIONAL: 14
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;newgate.cs.ucl.ac.uk.		IN	A
+
+;; AUTHORITY SECTION:
+uk.			172800	IN	NS	nsa.nic.uk.
+uk.			172800	IN	NS	nsb.nic.uk.
+uk.			172800	IN	NS	nsc.nic.uk.
+uk.			172800	IN	NS	nsd.nic.uk.
+uk.			172800	IN	NS	dns1.nic.uk.
+uk.			172800	IN	NS	dns2.nic.uk.
+uk.			172800	IN	NS	dns3.nic.uk.
+uk.			172800	IN	NS	dns4.nic.uk.
+
+;; ADDITIONAL SECTION:
+nsa.nic.uk.		172800	IN	A	156.154.100.3
+nsb.nic.uk.		172800	IN	A	156.154.101.3
+nsc.nic.uk.		172800	IN	A	156.154.102.3
+nsd.nic.uk.		172800	IN	A	156.154.103.3
+dns1.nic.uk.		172800	IN	A	213.248.216.1
+dns2.nic.uk.		172800	IN	A	103.49.80.1
+dns3.nic.uk.		172800	IN	A	213.248.220.1
+dns4.nic.uk.		172800	IN	A	43.230.48.1
+nsa.nic.uk.		172800	IN	AAAA	2001:502:ad09::3
+dns1.nic.uk.		172800	IN	AAAA	2a01:618:400::1
+dns2.nic.uk.		172800	IN	AAAA	2401:fd80:400::1
+dns3.nic.uk.		172800	IN	AAAA	2a01:618:404::1
+dns4.nic.uk.		172800	IN	AAAA	2401:fd80:404::1
+
+;; Query time: 76 msec
+;; SERVER: 199.7.83.42#53(199.7.83.42)
+;; WHEN: Thu Nov 10 14:24:51 GMT 2016
+;; MSG SIZE  rcvd: 469
+
+75 bmaulana@carpals-linux% dig @156.154.100.3 newgate.cs.ucl.ac.uk. +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @156.154.100.3 newgate.cs.ucl.ac.uk. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 51635
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 7, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;newgate.cs.ucl.ac.uk.		IN	A
+
+;; AUTHORITY SECTION:
+ac.uk.			172800	IN	NS	ns2.ja.net.
+ac.uk.			172800	IN	NS	ns0.ja.net.
+ac.uk.			172800	IN	NS	auth03.ns.uu.net.
+ac.uk.			172800	IN	NS	ns1.surfnet.nl.
+ac.uk.			172800	IN	NS	ns3.ja.net.
+ac.uk.			172800	IN	NS	ws-fra1.win-ip.dfn.de.
+ac.uk.			172800	IN	NS	ns4.ja.net.
+
+;; Query time: 9 msec
+;; SERVER: 156.154.100.3#53(156.154.100.3)
+;; WHEN: Thu Nov 10 14:28:22 GMT 2016
+;; MSG SIZE  rcvd: 217
+
+76 bmaulana@carpals-linux% dig @199.7.83.42 ns2.ja.net. +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @199.7.83.42 ns2.ja.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 63392
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: 16
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;ns2.ja.net.			IN	A
+
+;; AUTHORITY SECTION:
+net.			172800	IN	NS	a.gtld-servers.net.
+net.			172800	IN	NS	b.gtld-servers.net.
+net.			172800	IN	NS	c.gtld-servers.net.
+net.			172800	IN	NS	d.gtld-servers.net.
+net.			172800	IN	NS	e.gtld-servers.net.
+net.			172800	IN	NS	f.gtld-servers.net.
+net.			172800	IN	NS	g.gtld-servers.net.
+net.			172800	IN	NS	h.gtld-servers.net.
+net.			172800	IN	NS	i.gtld-servers.net.
+net.			172800	IN	NS	j.gtld-servers.net.
+net.			172800	IN	NS	k.gtld-servers.net.
+net.			172800	IN	NS	l.gtld-servers.net.
+net.			172800	IN	NS	m.gtld-servers.net.
+
+;; ADDITIONAL SECTION:
+a.gtld-servers.net.	172800	IN	A	192.5.6.30
+a.gtld-servers.net.	172800	IN	AAAA	2001:503:a83e::2:30
+b.gtld-servers.net.	172800	IN	A	192.33.14.30
+b.gtld-servers.net.	172800	IN	AAAA	2001:503:231d::2:30
+c.gtld-servers.net.	172800	IN	A	192.26.92.30
+d.gtld-servers.net.	172800	IN	A	192.31.80.30
+e.gtld-servers.net.	172800	IN	A	192.12.94.30
+f.gtld-servers.net.	172800	IN	A	192.35.51.30
+g.gtld-servers.net.	172800	IN	A	192.42.93.30
+h.gtld-servers.net.	172800	IN	A	192.54.112.30
+i.gtld-servers.net.	172800	IN	A	192.43.172.30
+j.gtld-servers.net.	172800	IN	A	192.48.79.30
+k.gtld-servers.net.	172800	IN	A	192.52.178.30
+l.gtld-servers.net.	172800	IN	A	192.41.162.30
+m.gtld-servers.net.	172800	IN	A	192.55.83.30
+
+;; Query time: 75 msec
+;; SERVER: 199.7.83.42#53(199.7.83.42)
+;; WHEN: Thu Nov 10 14:28:57 GMT 2016
+;; MSG SIZE  rcvd: 524
+
+77 bmaulana@carpals-linux% dig @192.5.6.30 ns2.ja.net. +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @192.5.6.30 ns2.ja.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 35447
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 5, ADDITIONAL: 11
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;ns2.ja.net.			IN	A
+
+;; AUTHORITY SECTION:
+ja.net.			172800	IN	NS	ns0.ja.net.
+ja.net.			172800	IN	NS	ns1.surfnet.nl.
+ja.net.			172800	IN	NS	ns1.ja.net.
+ja.net.			172800	IN	NS	ns2.ja.net.
+ja.net.			172800	IN	NS	ns4.ja.net.
+
+;; ADDITIONAL SECTION:
+ns0.ja.net.		172800	IN	A	128.86.1.20
+ns0.ja.net.		172800	IN	A	193.63.94.20
+ns0.ja.net.		172800	IN	AAAA	2001:630:0:8::14
+ns0.ja.net.		172800	IN	AAAA	2001:630:0:9::14
+ns1.ja.net.		172800	IN	A	194.81.227.226
+ns1.ja.net.		172800	IN	AAAA	2001:630:0:44::e2
+ns2.ja.net.		172800	IN	A	193.63.105.17
+ns2.ja.net.		172800	IN	AAAA	2001:630:0:45::11
+ns4.ja.net.		172800	IN	A	193.62.157.66
+ns4.ja.net.		172800	IN	AAAA	2001:630:0:47::42
+
+;; Query time: 5 msec
+;; SERVER: 192.5.6.30#53(192.5.6.30)
+;; WHEN: Thu Nov 10 14:29:17 GMT 2016
+;; MSG SIZE  rcvd: 355
+
+78 bmaulana@carpals-linux% dig @128.86.1.20 ns2.ja.net. +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @128.86.1.20 ns2.ja.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 31372
+;; flags: qr aa; QUERY: 1, ANSWER: 1, AUTHORITY: 5, ADDITIONAL: 12
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;ns2.ja.net.			IN	A
+
+;; ANSWER SECTION:
+ns2.ja.net.		86400	IN	A	193.63.105.17
+
+;; AUTHORITY SECTION:
+ja.net.			86400	IN	NS	ns1.ja.net.
+ja.net.			86400	IN	NS	ns4.ja.net.
+ja.net.			86400	IN	NS	ns2.ja.net.
+ja.net.			86400	IN	NS	ns0.ja.net.
+ja.net.			86400	IN	NS	ns1.surfnet.nl.
+
+;; ADDITIONAL SECTION:
+ns0.ja.net.		86400	IN	A	193.63.94.20
+ns0.ja.net.		86400	IN	A	128.86.1.20
+ns1.ja.net.		86400	IN	A	194.81.227.226
+ns1.surfnet.nl.		3600	IN	A	192.87.106.101
+ns4.ja.net.		86400	IN	A	193.62.157.66
+ns0.ja.net.		86400	IN	AAAA	2001:630:0:8::14
+ns0.ja.net.		86400	IN	AAAA	2001:630:0:9::14
+ns1.ja.net.		86400	IN	AAAA	2001:630:0:44::e2
+ns1.surfnet.nl.		3600	IN	AAAA	2001:610:1:800a:192:87:106:101
+ns2.ja.net.		86400	IN	AAAA	2001:630:0:45::11
+ns4.ja.net.		86400	IN	AAAA	2001:630:0:47::42
+
+;; Query time: 6 msec
+;; SERVER: 128.86.1.20#53(128.86.1.20)
+;; WHEN: Thu Nov 10 14:29:32 GMT 2016
+;; MSG SIZE  rcvd: 399
+
+79 bmaulana@carpals-linux% dig @193.63.105.17 newgate.cs.ucl.ac.uk. +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @193.63.105.17 newgate.cs.ucl.ac.uk. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 4237
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 3, ADDITIONAL: 8
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;newgate.cs.ucl.ac.uk.		IN	A
+
+;; AUTHORITY SECTION:
+cs.ucl.ac.uk.		360000	IN	NS	ns1.cs.ucl.ac.uk.
+cs.ucl.ac.uk.		360000	IN	NS	sun.mhs-relay.ac.uk.
+cs.ucl.ac.uk.		360000	IN	NS	ns0.ja.net.
+
+;; ADDITIONAL SECTION:
+ns0.ja.net.		86400	IN	A	128.86.1.20
+ns0.ja.net.		86400	IN	A	193.63.94.20
+ns1.cs.ucl.ac.uk.	360000	IN	A	128.16.5.32
+sun.mhs-relay.ac.uk.	50400	IN	A	128.86.8.25
+ns0.ja.net.		86400	IN	AAAA	2001:630:0:9::14
+ns0.ja.net.		86400	IN	AAAA	2001:630:0:8::14
+sun.mhs-relay.ac.uk.	50400	IN	AAAA	2001:630:0:42::25
+
+;; Query time: 9 msec
+;; SERVER: 193.63.105.17#53(193.63.105.17)
+;; WHEN: Thu Nov 10 14:31:00 GMT 2016
+;; MSG SIZE  rcvd: 267
+
+80 bmaulana@carpals-linux% dig @128.86.1.20 newgate.cs.ucl.ac.uk. +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @128.86.1.20 newgate.cs.ucl.ac.uk. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 25232
+;; flags: qr aa; QUERY: 1, ANSWER: 1, AUTHORITY: 3, ADDITIONAL: 6
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;newgate.cs.ucl.ac.uk.		IN	A
+
+;; ANSWER SECTION:
+newgate.cs.ucl.ac.uk.	86400	IN	A	128.16.9.83
+
+;; AUTHORITY SECTION:
+cs.ucl.ac.uk.		360000	IN	NS	ns1.cs.ucl.ac.uk.
+cs.ucl.ac.uk.		360000	IN	NS	sun.mhs-relay.ac.uk.
+cs.ucl.ac.uk.		360000	IN	NS	ns0.ja.net.
+
+;; ADDITIONAL SECTION:
+ns0.ja.net.		86400	IN	A	128.86.1.20
+ns0.ja.net.		86400	IN	A	193.63.94.20
+ns1.cs.ucl.ac.uk.	360000	IN	A	128.16.5.32
+ns0.ja.net.		86400	IN	AAAA	2001:630:0:8::14
+ns0.ja.net.		86400	IN	AAAA	2001:630:0:9::14
+
+;; Query time: 5 msec
+;; SERVER: 128.86.1.20#53(128.86.1.20)
+;; WHEN: Thu Nov 10 14:33:03 GMT 2016
+;; MSG SIZE  rcvd: 239
+
+82 bmaulana@carpals-linux% dig @199.7.83.42 www.microsoft.com. +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @199.7.83.42 www.microsoft.com. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 37823
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: 16
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;www.microsoft.com.		IN	A
+
+;; AUTHORITY SECTION:
+com.			172800	IN	NS	a.gtld-servers.net.
+com.			172800	IN	NS	b.gtld-servers.net.
+com.			172800	IN	NS	c.gtld-servers.net.
+com.			172800	IN	NS	d.gtld-servers.net.
+com.			172800	IN	NS	e.gtld-servers.net.
+com.			172800	IN	NS	f.gtld-servers.net.
+com.			172800	IN	NS	g.gtld-servers.net.
+com.			172800	IN	NS	h.gtld-servers.net.
+com.			172800	IN	NS	i.gtld-servers.net.
+com.			172800	IN	NS	j.gtld-servers.net.
+com.			172800	IN	NS	k.gtld-servers.net.
+com.			172800	IN	NS	l.gtld-servers.net.
+com.			172800	IN	NS	m.gtld-servers.net.
+
+;; ADDITIONAL SECTION:
+a.gtld-servers.net.	172800	IN	A	192.5.6.30
+a.gtld-servers.net.	172800	IN	AAAA	2001:503:a83e::2:30
+b.gtld-servers.net.	172800	IN	A	192.33.14.30
+b.gtld-servers.net.	172800	IN	AAAA	2001:503:231d::2:30
+c.gtld-servers.net.	172800	IN	A	192.26.92.30
+d.gtld-servers.net.	172800	IN	A	192.31.80.30
+e.gtld-servers.net.	172800	IN	A	192.12.94.30
+f.gtld-servers.net.	172800	IN	A	192.35.51.30
+g.gtld-servers.net.	172800	IN	A	192.42.93.30
+h.gtld-servers.net.	172800	IN	A	192.54.112.30
+i.gtld-servers.net.	172800	IN	A	192.43.172.30
+j.gtld-servers.net.	172800	IN	A	192.48.79.30
+k.gtld-servers.net.	172800	IN	A	192.52.178.30
+l.gtld-servers.net.	172800	IN	A	192.41.162.30
+m.gtld-servers.net.	172800	IN	A	192.55.83.30
+
+;; Query time: 77 msec
+;; SERVER: 199.7.83.42#53(199.7.83.42)
+;; WHEN: Thu Nov 10 14:34:52 GMT 2016
+;; MSG SIZE  rcvd: 534
+
+84 bmaulana@carpals-linux% dig @192.5.6.30 www.microsoft.com +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @192.5.6.30 www.microsoft.com. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 43896
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 4, ADDITIONAL: 9
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;www.microsoft.com.		IN	A
+
+;; AUTHORITY SECTION:
+microsoft.com.		172800	IN	NS	ns3.msft.net.
+microsoft.com.		172800	IN	NS	ns1.msft.net.
+microsoft.com.		172800	IN	NS	ns2.msft.net.
+microsoft.com.		172800	IN	NS	ns4.msft.net.
+
+;; ADDITIONAL SECTION:
+ns3.msft.net.		172800	IN	A	193.221.113.53
+ns3.msft.net.		172800	IN	AAAA	2620:0:34::53
+ns1.msft.net.		172800	IN	A	208.84.0.53
+ns1.msft.net.		172800	IN	AAAA	2620:0:30::53
+ns2.msft.net.		172800	IN	A	208.84.2.53
+ns2.msft.net.		172800	IN	AAAA	2620:0:32::53
+ns4.msft.net.		172800	IN	A	208.76.45.53
+ns4.msft.net.		172800	IN	AAAA	2620:0:37::53
+
+;; Query time: 1 msec
+;; SERVER: 192.5.6.30#53(192.5.6.30)
+;; WHEN: Thu Nov 10 14:35:40 GMT 2016
+;; MSG SIZE  rcvd: 302
+
+86 bmaulana@carpals-linux% dig @193.221.113.53 www.microsoft.com +norecurse
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-29.el7_2.4 <<>> @193.221.113.53 www.microsoft.com. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 8348
+;; flags: qr aa; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4000
+;; QUESTION SECTION:
+;www.microsoft.com.		IN	A
+
+;; ANSWER SECTION:
+www.microsoft.com.	3600	IN	CNAME	www.microsoft.com-c-2.edgekey.net.
+
+;; Query time: 11 msec
+;; SERVER: 193.221.113.53#53(193.221.113.53)
+;; WHEN: Thu Nov 10 14:36:23 GMT 2016
+;; MSG SIZE  rcvd: 93
+
+101 bmaulana@victoria% dig @199.7.83.42 www.microsoft.com-c-2.edgekey.net. +norecurse
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.3 <<>> @199.7.83.42 www.microsoft.com-c-2.edgekey.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 22392
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: 13
+
+;; QUESTION SECTION:
+;www.microsoft.com-c-2.edgekey.net. IN	A
+
+;; AUTHORITY SECTION:
+net.			172800	IN	NS	a.gtld-servers.net.
+net.			172800	IN	NS	b.gtld-servers.net.
+net.			172800	IN	NS	c.gtld-servers.net.
+net.			172800	IN	NS	d.gtld-servers.net.
+net.			172800	IN	NS	e.gtld-servers.net.
+net.			172800	IN	NS	f.gtld-servers.net.
+net.			172800	IN	NS	g.gtld-servers.net.
+net.			172800	IN	NS	h.gtld-servers.net.
+net.			172800	IN	NS	i.gtld-servers.net.
+net.			172800	IN	NS	j.gtld-servers.net.
+net.			172800	IN	NS	k.gtld-servers.net.
+net.			172800	IN	NS	l.gtld-servers.net.
+net.			172800	IN	NS	m.gtld-servers.net.
+
+;; ADDITIONAL SECTION:
+a.gtld-servers.net.	172800	IN	A	192.5.6.30
+a.gtld-servers.net.	172800	IN	AAAA	2001:503:a83e::2:30
+b.gtld-servers.net.	172800	IN	A	192.33.14.30
+b.gtld-servers.net.	172800	IN	AAAA	2001:503:231d::2:30
+c.gtld-servers.net.	172800	IN	A	192.26.92.30
+d.gtld-servers.net.	172800	IN	A	192.31.80.30
+e.gtld-servers.net.	172800	IN	A	192.12.94.30
+f.gtld-servers.net.	172800	IN	A	192.35.51.30
+g.gtld-servers.net.	172800	IN	A	192.42.93.30
+h.gtld-servers.net.	172800	IN	A	192.54.112.30
+i.gtld-servers.net.	172800	IN	A	192.43.172.30
+j.gtld-servers.net.	172800	IN	A	192.48.79.30
+k.gtld-servers.net.	172800	IN	A	192.52.178.30
+
+;; Query time: 75 msec
+;; SERVER: 199.7.83.42#53(199.7.83.42)
+;; WHEN: Sat Nov 12 16:17:03 2016
+;; MSG SIZE  rcvd: 504
+
+102 bmaulana@victoria% dig @192.5.6.30 www.microsoft.com-c-2.edgekey.net. +norecurse
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.3 <<>> @192.5.6.30 www.microsoft.com-c-2.edgekey.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 10637
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: 10
+
+;; QUESTION SECTION:
+;www.microsoft.com-c-2.edgekey.net. IN	A
+
+;; AUTHORITY SECTION:
+edgekey.net.		172800	IN	NS	ns1-66.akam.net.
+edgekey.net.		172800	IN	NS	usw6.akam.net.
+edgekey.net.		172800	IN	NS	adns1.akam.net.
+edgekey.net.		172800	IN	NS	ns4-66.akam.net.
+edgekey.net.		172800	IN	NS	ns7-65.akam.net.
+edgekey.net.		172800	IN	NS	ns5-66.akam.net.
+edgekey.net.		172800	IN	NS	a6-65.akam.net.
+edgekey.net.		172800	IN	NS	a5-65.akam.net.
+edgekey.net.		172800	IN	NS	a16-65.akam.net.
+edgekey.net.		172800	IN	NS	a18-65.akam.net.
+edgekey.net.		172800	IN	NS	a28-65.akam.net.
+edgekey.net.		172800	IN	NS	a13-65.akam.net.
+edgekey.net.		172800	IN	NS	a26-65.akam.net.
+
+;; ADDITIONAL SECTION:
+ns1-66.akam.net.	172800	IN	A	193.108.91.66
+ns1-66.akam.net.	172800	IN	AAAA	2600:1401:2::42
+usw6.akam.net.		172800	IN	A	23.61.199.64
+adns1.akam.net.		172800	IN	A	96.7.50.66
+ns4-66.akam.net.	172800	IN	A	84.53.139.66
+ns7-65.akam.net.	172800	IN	A	96.7.49.65
+ns5-66.akam.net.	172800	IN	A	184.85.248.66
+a6-65.akam.net.		172800	IN	A	23.211.133.65
+a6-65.akam.net.		172800	IN	AAAA	2600:1401:1::41
+a5-65.akam.net.		172800	IN	A	95.100.168.65
+
+;; Query time: 2 msec
+;; SERVER: 192.5.6.30#53(192.5.6.30)
+;; WHEN: Sat Nov 12 16:18:39 2016
+;; MSG SIZE  rcvd: 508
+
+103 bmaulana@victoria% dig @193.108.91.66 www.microsoft.com-c-2.edgekey.net. +norecurse
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.3 <<>> @193.108.91.66 www.microsoft.com-c-2.edgekey.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 45530
+;; flags: qr aa; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;www.microsoft.com-c-2.edgekey.net. IN	A
+
+;; ANSWER SECTION:
+www.microsoft.com-c-2.edgekey.net. 21600 IN CNAME www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net.
+
+;; Query time: 2 msec
+;; SERVER: 193.108.91.66#53(193.108.91.66)
+;; WHEN: Sat Nov 12 16:19:56 2016
+;; MSG SIZE  rcvd: 118
+
+104 bmaulana@victoria% dig @193.108.91.66 www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. +norecurse
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.3 <<>> @193.108.91.66 www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: REFUSED, id: 43636
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. IN A
+
+;; Query time: 1 msec
+;; SERVER: 193.108.91.66#53(193.108.91.66)
+;; WHEN: Sat Nov 12 16:21:10 2016
+;; MSG SIZE  rcvd: 74
+
+105 bmaulana@victoria% dig @199.7.83.42 www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. +norecurse
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.3 <<>> @199.7.83.42 www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 17032
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: 13
+
+;; QUESTION SECTION:
+;www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. IN A
+
+;; AUTHORITY SECTION:
+net.			172800	IN	NS	a.gtld-servers.net.
+net.			172800	IN	NS	b.gtld-servers.net.
+net.			172800	IN	NS	c.gtld-servers.net.
+net.			172800	IN	NS	d.gtld-servers.net.
+net.			172800	IN	NS	e.gtld-servers.net.
+net.			172800	IN	NS	f.gtld-servers.net.
+net.			172800	IN	NS	g.gtld-servers.net.
+net.			172800	IN	NS	h.gtld-servers.net.
+net.			172800	IN	NS	i.gtld-servers.net.
+net.			172800	IN	NS	j.gtld-servers.net.
+net.			172800	IN	NS	k.gtld-servers.net.
+net.			172800	IN	NS	l.gtld-servers.net.
+net.			172800	IN	NS	m.gtld-servers.net.
+
+;; ADDITIONAL SECTION:
+a.gtld-servers.net.	172800	IN	A	192.5.6.30
+b.gtld-servers.net.	172800	IN	A	192.33.14.30
+c.gtld-servers.net.	172800	IN	A	192.26.92.30
+d.gtld-servers.net.	172800	IN	A	192.31.80.30
+e.gtld-servers.net.	172800	IN	A	192.12.94.30
+f.gtld-servers.net.	172800	IN	A	192.35.51.30
+g.gtld-servers.net.	172800	IN	A	192.42.93.30
+h.gtld-servers.net.	172800	IN	A	192.54.112.30
+i.gtld-servers.net.	172800	IN	A	192.43.172.30
+j.gtld-servers.net.	172800	IN	A	192.48.79.30
+k.gtld-servers.net.	172800	IN	A	192.52.178.30
+l.gtld-servers.net.	172800	IN	A	192.41.162.30
+m.gtld-servers.net.	172800	IN	A	192.55.83.30
+
+;; Query time: 76 msec
+;; SERVER: 199.7.83.42#53(199.7.83.42)
+;; WHEN: Sat Nov 12 16:24:39 2016
+;; MSG SIZE  rcvd: 503
+
+106 bmaulana@victoria% dig @192.5.6.30 www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. +norecurse
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.3 <<>> @192.5.6.30 www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 92
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 10, ADDITIONAL: 5
+
+;; QUESTION SECTION:
+;www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. IN A
+
+;; AUTHORITY SECTION:
+akadns.net.		172800	IN	NS	a3-129.akadns.net.
+akadns.net.		172800	IN	NS	a7-131.akadns.net.
+akadns.net.		172800	IN	NS	a11-129.akadns.net.
+akadns.net.		172800	IN	NS	a1-128.akadns.net.
+akadns.net.		172800	IN	NS	a9-128.akadns.net.
+akadns.net.		172800	IN	NS	a5-130.akadns.org.
+akadns.net.		172800	IN	NS	a13-130.akadns.org.
+akadns.net.		172800	IN	NS	a4-131.akadns.org.
+akadns.net.		172800	IN	NS	a10-128.akadns.org.
+akadns.net.		172800	IN	NS	a28-129.akadns.org.
+
+;; ADDITIONAL SECTION:
+a3-129.akadns.net.	172800	IN	A	96.7.49.129
+a7-131.akadns.net.	172800	IN	A	23.61.199.131
+a11-129.akadns.net.	172800	IN	A	84.53.139.129
+a1-128.akadns.net.	172800	IN	A	193.108.88.128
+a9-128.akadns.net.	172800	IN	A	184.85.248.128
+
+;; Query time: 2 msec
+;; SERVER: 192.5.6.30#53(192.5.6.30)
+;; WHEN: Sat Nov 12 16:24:54 2016
+;; MSG SIZE  rcvd: 378
+
+107 bmaulana@victoria% dig @96.7.49.129 www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. +norecurse
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.3 <<>> @96.7.49.129 www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 8303
+;; flags: qr; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. IN A
+
+;; ANSWER SECTION:
+www.microsoft.com-c-2.edgekey.net.globalredir.akadns.net. 900 IN CNAME e2847.dspb.akamaiedge.net.
+
+;; Query time: 2 msec
+;; SERVER: 96.7.49.129#53(96.7.49.129)
+;; WHEN: Sat Nov 12 16:25:12 2016
+;; MSG SIZE  rcvd: 110
+
+108 bmaulana@victoria% dig @199.7.83.42 e2847.dspb.akamaiedge.net. +norecurse
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.3 <<>> @199.7.83.42 e2847.dspb.akamaiedge.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 5580
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: 14
+
+;; QUESTION SECTION:
+;e2847.dspb.akamaiedge.net.	IN	A
+
+;; AUTHORITY SECTION:
+net.			172800	IN	NS	a.gtld-servers.net.
+net.			172800	IN	NS	b.gtld-servers.net.
+net.			172800	IN	NS	c.gtld-servers.net.
+net.			172800	IN	NS	d.gtld-servers.net.
+net.			172800	IN	NS	e.gtld-servers.net.
+net.			172800	IN	NS	f.gtld-servers.net.
+net.			172800	IN	NS	g.gtld-servers.net.
+net.			172800	IN	NS	h.gtld-servers.net.
+net.			172800	IN	NS	i.gtld-servers.net.
+net.			172800	IN	NS	j.gtld-servers.net.
+net.			172800	IN	NS	k.gtld-servers.net.
+net.			172800	IN	NS	l.gtld-servers.net.
+net.			172800	IN	NS	m.gtld-servers.net.
+
+;; ADDITIONAL SECTION:
+a.gtld-servers.net.	172800	IN	A	192.5.6.30
+a.gtld-servers.net.	172800	IN	AAAA	2001:503:a83e::2:30
+b.gtld-servers.net.	172800	IN	A	192.33.14.30
+b.gtld-servers.net.	172800	IN	AAAA	2001:503:231d::2:30
+c.gtld-servers.net.	172800	IN	A	192.26.92.30
+d.gtld-servers.net.	172800	IN	A	192.31.80.30
+e.gtld-servers.net.	172800	IN	A	192.12.94.30
+f.gtld-servers.net.	172800	IN	A	192.35.51.30
+g.gtld-servers.net.	172800	IN	A	192.42.93.30
+h.gtld-servers.net.	172800	IN	A	192.54.112.30
+i.gtld-servers.net.	172800	IN	A	192.43.172.30
+j.gtld-servers.net.	172800	IN	A	192.48.79.30
+k.gtld-servers.net.	172800	IN	A	192.52.178.30
+l.gtld-servers.net.	172800	IN	A	192.41.162.30
+
+;; Query time: 75 msec
+;; SERVER: 199.7.83.42#53(199.7.83.42)
+;; WHEN: Sat Nov 12 16:26:46 2016
+;; MSG SIZE  rcvd: 512
+
+109 bmaulana@victoria% dig @192.5.6.30 e2847.dspb.akamaiedge.net. +norecurse
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.3 <<>> @192.5.6.30 e2847.dspb.akamaiedge.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 47973
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: 11
+
+;; QUESTION SECTION:
+;e2847.dspb.akamaiedge.net.	IN	A
+
+;; AUTHORITY SECTION:
+akamaiedge.net.		172800	IN	NS	la1.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	la6.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	la7.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	la3.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	lar6.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	lar2.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	ns3-194.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	ns2-194.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	ns4-194.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	ns6-194.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	ns7-194.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	ns5-194.akamaiedge.net.
+akamaiedge.net.		172800	IN	NS	ns1-1.akamaiedge.net.
+
+;; ADDITIONAL SECTION:
+la1.akamaiedge.net.	172800	IN	A	184.26.161.192
+la6.akamaiedge.net.	172800	IN	A	96.7.50.192
+la7.akamaiedge.net.	172800	IN	A	23.211.132.192
+la3.akamaiedge.net.	172800	IN	A	95.101.36.192
+lar6.akamaiedge.net.	172800	IN	A	95.100.174.192
+lar2.akamaiedge.net.	172800	IN	A	2.16.40.192
+ns3-194.akamaiedge.net.	172800	IN	A	23.61.199.194
+ns3-194.akamaiedge.net.	172800	IN	AAAA	2600:1406:32::c2
+ns2-194.akamaiedge.net.	172800	IN	A	2.22.230.194
+ns4-194.akamaiedge.net.	172800	IN	AAAA	2600:1480:1::c2
+ns4-194.akamaiedge.net.	172800	IN	A	84.53.139.194
+
+;; Query time: 2 msec
+;; SERVER: 192.5.6.30#53(192.5.6.30)
+;; WHEN: Sat Nov 12 16:26:56 2016
+;; MSG SIZE  rcvd: 505
+
+110 bmaulana@victoria% dig @184.26.161.192 e2847.dspb.akamaiedge.net. +norecurse
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.3 <<>> @184.26.161.192 e2847.dspb.akamaiedge.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 56888
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 9, ADDITIONAL: 9
+
+;; QUESTION SECTION:
+;e2847.dspb.akamaiedge.net.	IN	A
+
+;; AUTHORITY SECTION:
+dspb.akamaiedge.net.	4000	IN	NS	n0dspb.akamaiedge.net.
+dspb.akamaiedge.net.	6000	IN	NS	n6dspb.akamaiedge.net.
+dspb.akamaiedge.net.	6000	IN	NS	n1dspb.akamaiedge.net.
+dspb.akamaiedge.net.	4000	IN	NS	a0dspb.akamaiedge.net.
+dspb.akamaiedge.net.	4000	IN	NS	n5dspb.akamaiedge.net.
+dspb.akamaiedge.net.	6000	IN	NS	n3dspb.akamaiedge.net.
+dspb.akamaiedge.net.	8000	IN	NS	n4dspb.akamaiedge.net.
+dspb.akamaiedge.net.	8000	IN	NS	n2dspb.akamaiedge.net.
+dspb.akamaiedge.net.	8000	IN	NS	n7dspb.akamaiedge.net.
+
+;; ADDITIONAL SECTION:
+n2dspb.akamaiedge.net.	8000	IN	A	88.221.81.195
+n4dspb.akamaiedge.net.	8000	IN	A	23.3.15.41
+n0dspb.akamaiedge.net.	4000	IN	A	23.212.108.69
+n7dspb.akamaiedge.net.	8000	IN	A	23.3.15.48
+a0dspb.akamaiedge.net.	4000	IN	AAAA	2600:1480:e800::c0
+n6dspb.akamaiedge.net.	6000	IN	A	23.3.15.47
+n3dspb.akamaiedge.net.	6000	IN	A	23.3.15.40
+n1dspb.akamaiedge.net.	6000	IN	A	2.20.133.137
+n5dspb.akamaiedge.net.	4000	IN	A	23.3.15.42
+
+;; Query time: 2 msec
+;; SERVER: 184.26.161.192#53(184.26.161.192)
+;; WHEN: Sat Nov 12 16:27:08 2016
+;; MSG SIZE  rcvd: 388
+
+111 bmaulana@victoria% dig @88.221.81.195 e2847.dspb.akamaiedge.net. +norecurse
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.3 <<>> @88.221.81.195 e2847.dspb.akamaiedge.net. +norecurse
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 30160
+;; flags: qr aa; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;e2847.dspb.akamaiedge.net.	IN	A
+
+;; ANSWER SECTION:
+e2847.dspb.akamaiedge.net. 20	IN	A	23.55.119.121
+
+;; Query time: 18 msec
+;; SERVER: 88.221.81.195#53(88.221.81.195)
+;; WHEN: Sat Nov 12 16:27:34 2016
+;; MSG SIZE  rcvd: 59
+
+3. During the name resolution process for www.xorp.org., all of the name servers used along the way from root to ns.xorp.org. has glue records for each nameserver in the authority section - each nameserver in the authority section has a corresponding IP address in the additional section that could be used for further queries. During the name resultion process for newgate.cs.ucl.ac.uk., the nameserver nsa.nic.uk. or 156.154.100.3 does not have glue records for the nameservers it returned in the authority section, so I had to do a second recursive query for the IP address of ns2.ja.net. (one of the nameservers in the authority section that nsa.nic.uk. returned) starting from root, in order to continue the recursive query for newgate.cs.ucl.ac.uk.
+
+4. In the initial query for www.microsoft.com, the answer resource record in the query for www.microsoft.com the answer is of type CNAME, instead of type A. CNAME does not contain an IP address directly but instead it has an alias to another canonical hostname, which in this case is www.microsoft.com-c-2.edgekey. To get the IP address of www.microsoft.com I had to do a second recursive query to get the IP address of its canonical hostname www.microsoft.com-c-2.edgekey., which in turn is also the IP address of www.microsoft.com.

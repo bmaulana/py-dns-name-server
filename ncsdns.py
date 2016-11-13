@@ -1,0 +1,215 @@
+#!/usr/bin/python
+
+from copy import copy
+from optparse import OptionParser, OptionValueError
+import pprint
+from random import seed, randint
+import struct
+from socket import *
+from sys import exit, maxint as MAXINT
+from time import time, sleep
+
+from gz01.collections_backport import OrderedDict
+from gz01.dnslib.RR import *
+from gz01.dnslib.Header import Header
+from gz01.dnslib.QE import QE
+from gz01.inetlib.types import *
+from gz01.util import *
+
+# timeout in seconds to wait for reply
+TIMEOUT = 5
+
+# domain name and internet address of a root name server
+ROOTNS_DN = "f.root-servers.net."
+ROOTNS_IN_ADDR = "192.5.5.241"
+
+
+class ACacheEntry:
+    ALPHA = 0.8
+
+    def __init__(self, dict, srtt=None):
+        self._srtt = srtt
+        self._dict = dict
+
+    def __repr__(self):
+        return "<ACE %s, srtt=%s>" % \
+               (self._dict, ("*" if self._srtt is None else self._srtt),)
+
+    def update_rtt(self, rtt):
+        old_srtt = self._srtt
+        self._srtt = rtt if self._srtt is None else \
+            (rtt * (1.0 - self.ALPHA) + self._srtt * self.ALPHA)
+        logger.debug("update_rtt: rtt %f updates srtt %s --> %s" % \
+                     (rtt, ("*" if old_srtt is None else old_srtt), self._srtt,))
+
+
+class CacheEntry:
+    def __init__(self, expiration=MAXINT, authoritative=False):
+        self._expiration = expiration
+        self._authoritative = authoritative
+
+    def __repr__(self):
+        now = int(time())
+        return "<CE exp=%ds auth=%s>" % \
+               (self._expiration - now, self._authoritative,)
+
+
+class CnameCacheEntry:
+    def __init__(self, cname, expiration=MAXINT, authoritative=False):
+        self._cname = cname
+        self._expiration = expiration
+        self._authoritative = authoritative
+
+    def __repr__(self):
+        now = int(time())
+        return "<CCE cname=%s exp=%ds auth=%s>" % \
+               (self._cname, self._expiration - now, self._authoritative,)
+
+
+# >>> entry point of ncsdns.py <<<
+
+# Seed random number generator with current time of day:
+now = int(time())
+seed(now)
+
+# Initialize the pretty printer:
+pp = pprint.PrettyPrinter(indent=3)
+
+# Initialize the name server cache data structure; 
+# [domain name --> [nsdn --> CacheEntry]]:
+nscache = dict([(DomainName("."),
+                 OrderedDict([(DomainName(ROOTNS_DN),
+                               CacheEntry(expiration=MAXINT, authoritative=True))]))])
+
+# Initialize the address cache data structure;
+# [domain name --> [in_addr --> CacheEntry]]:
+acache = dict([(DomainName(ROOTNS_DN),
+                ACacheEntry(dict([(InetAddr(ROOTNS_IN_ADDR),
+                                   CacheEntry(expiration=MAXINT,
+                                              authoritative=True))])))])
+
+# Initialize the cname cache data structure;
+# [domain name --> CnameCacheEntry]
+cnamecache = dict([])
+
+
+# Parse the command line and assign us an ephemeral port to listen on:
+def check_port(option, opt_str, value, parser):
+    if value < 32768 or value > 61000:
+        raise OptionValueError("need 32768 <= port <= 61000")
+    parser.values.port = value
+
+
+parser = OptionParser()
+parser.add_option("-p", "--port", dest="port", type="int", action="callback",
+                  callback=check_port, metavar="PORTNO", default=0,
+                  help="UDP port to listen on (default: use an unused ephemeral port)")
+(options, args) = parser.parse_args()
+
+# Create a server socket to accept incoming connections from DNS
+# client resolvers (stub resolvers):
+ss = socket(AF_INET, SOCK_DGRAM)
+ss.bind(("127.0.0.1", options.port))
+serveripaddr, serverport = ss.getsockname()
+
+# NOTE: In order to pass the test suite, the following must be the
+# first line that your dns server prints and flushes within one
+# second, to sys.stdout:
+print "%s: listening on port %d" % (sys.argv[0], serverport)
+sys.stdout.flush()
+
+# Create a client socket on which to send requests to other DNS
+# servers:
+setdefaulttimeout(TIMEOUT)
+cs = socket(AF_INET, SOCK_DGRAM)
+
+# This is a simple, single-threaded server that takes successive
+# connections with each iteration of the following loop:
+while 1:
+    (data, address,) = ss.recvfrom(512)  # DNS limits UDP msgs to 512 bytes
+    if not data:
+        logger.error("client provided no data")
+        continue
+
+    # TODO: Insert code here to perform the recursive DNS lookup, putting the result in reply.
+    print "Query received from client is:\n", hexdump(data)
+    query_header = Header.fromData(data)
+    print "Query header received from client is:\n", hexdump(query_header.pack())
+    print "Query header received from client in human readable form is:\n", query_header
+    query_qe = QE.fromData(data, 12)
+    print "\nQuery QE received from client is:\n", hexdump(query_qe.pack())
+    print "Query QE received from client in human readable form is:\n", query_qe
+    print "\nClient's address is:\n", address
+
+    answer = False
+    dns_server_to_send = "199.7.83.42"  # root DNS server (?)
+
+    while not answer:
+        # create DNS query to be sent to server
+        iq_id = randint(0, 65536)  # random 16 bit int
+        iq_header = Header(iq_id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1)
+        print "\nHeader to send to DNS server in human readable form is:\n", iq_header
+        iq = iq_header.pack() + query_qe.pack()
+        print "\nQuery to send to DNS server is:\n", hexdump(iq)
+        print "IP Address of DNS Server is:", dns_server_to_send
+        cs.sendto(iq, (dns_server_to_send, 53))  # DNS servers use port 53 by convention (?)
+
+        # get reply from server
+        (response, address_not_used,) = cs.recvfrom(512)
+        print "\nResponse received from server is:\n", hexdump(response)
+        response_header = Header.fromData(response)
+        print "Response header received from DNS server is:\n", hexdump(response_header.pack())
+        print "Response header received from DNS server in human readable form is:\n", response_header
+
+        # TODO parse response.
+        # If answer exist, answer = True and send answer (and all RRs from last response received) to client.
+        # Else, check authority & additional section to determine next DNS name server to send query.
+        num_rrs = response_header._ancount + response_header._nscount + response_header._arcount
+        print "\nnumber of RRs in response is:", num_rrs
+
+        response_rrs = []
+        offset = len(iq)
+        for i in range(num_rrs):
+            response_rr = RR.fromData(response, offset)
+            print response_rr[0]
+            response_rrs.append(response_rr[0])
+            offset += response_rr[1]
+
+        if response_header._ancount > 0:
+            print "\nanswer found. No. of answers is:", response_header._ancount
+            answer = True
+            break    
+
+        next_name_server = ""
+        for rr in response_rrs:
+            if rr._type == RR.TYPE_NS:
+                if next_name_server == "":
+                    next_name_server = rr._nsdn
+                    print "Next name server is:", next_name_server
+            if rr._type == RR.TYPE_A:
+                if next_name_server == rr._dn:
+                    next_name_server = inet_ntoa(rr._inaddr)
+                    print "Next name server is:", next_name_server
+            # TODO handle if glue not found
+
+        dns_server_to_send = next_name_server
+    
+    # create DNS response to client
+    reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount, ancount=response_header._ancount, nscount=response_header._nscount, arcount=response_header._arcount, qr=True, aa=False, tc=False, rd=True, ra=True)
+    reply = reply_header.pack() + query_qe.pack()
+    for rr in response_rrs:
+        reply += rr.pack()
+    print "\nHeader to send back to client in human readable form is:\n", reply_header
+    print "\nReply to send back to client is:\n", hexdump(reply)
+       
+    # TODO: Code end
+    # TODO: caching
+    # TODO: CNAME
+    # TODO: work through page 9 requirements.
+
+    logger.log(DEBUG2, "our reply in full:")
+    logger.log(DEBUG2, hexdump(reply))
+
+    ss.sendto(reply, address)
+
+    print "\n\nEND QUERY\n\n"
