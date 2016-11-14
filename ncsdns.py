@@ -235,8 +235,9 @@ while 1:
     signal.alarm(60)
 
     try:
-        # Send iterative queries to other DNS servers
-        (response_header, response_rrs) = get_ip_addr(query_qe)
+        (response_header, response_rrs) = get_ip_addr(query_qe)  # Send iterative queries to other DNS servers
+
+        signal.alarm(0)  # disable timeout alarm
 
         # create DNS response to client
         reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
@@ -266,3 +267,4 @@ while 1:
     except Exception, exc:
         if exc.message == "timeout":
             print "\n\nQUERY TIMEOUT\n\n"
+        signal.alarm(0)  # disable timeout alarm
