@@ -180,7 +180,7 @@ def getIPAddr(qe):
             # glue record not found
             dns_qe = QE(dn=next_name_server)
             (dns_header, dns_rrs) = getIPAddr(dns_qe)
-            next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
+            next_name_server_ip = inet_ntoa(dns_rrs[1]._inaddr)
 
         dns_server_to_send = next_name_server_ip
 
