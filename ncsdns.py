@@ -129,32 +129,39 @@ cs = socket(AF_INET, SOCK_DGRAM)
 # recursive function which takes a question entry and sends recursive dns queries to other dns name servers
 # to get the IP address of the domain name specified in the question entry
 def get_ip_addr(qe):
-    dns_server_to_send = "199.7.83.42"  # root DNS server (?)
+    dns_server_to_send = "199.7.83.42"  # root DNS server
 
     while True:
-        # create DNS query to be sent to server
+        # create DNS query to be sent to authoritative DNS name server
         iq_id = randint(0, 65536)  # random 16 bit int
         iq_header = Header(iq_id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1)
-        print "\nHeader to send to DNS server in human readable form is:\n", iq_header
+        print "\nHeader of query to send to authoritative DNS name server in human readable form is:\n", iq_header
         iq = iq_header.pack() + qe.pack()
         # print "\nQuery to send to DNS server is:\n", hexdump(iq)
-        # print "IP Address of DNS Server is:", dns_server_to_send
-        cs.sendto(iq, (dns_server_to_send, 53))  # DNS servers use port 53 by convention (?)
+        cs.sendto(iq, (dns_server_to_send, 53))  # DNS servers use port 53 by convention
 
         # get reply from server
-        while True:
-            (response, address_not_used,) = cs.recvfrom(512)
-            response_header = Header.fromData(response)
-            if response_header._id == iq_id:
-                break
+        try:
+            while True:
+                (response, address_not_used,) = cs.recvfrom(512)
+                response_header = Header.fromData(response)
+                if response_header._id == iq_id:
+                    break
+
+        # If no response from server
+        except Exception, exc:
+            if exc.message == "timeout": # TODO give a 1/2 second timeout on waiting for reply
+                print "\nTimeout, trying to resend query to same authoritative DNS name server"
+                # TODO after n tries, try different name server
+                continue
 
         # print "\nResponse received from server is:\n", hexdump(response)
         # print "Response header received from DNS server is:\n", hexdump(response_header.pack())
-        print "\nResponse header received from DNS server in human readable form is:\n", response_header
+        print "\nResponse header received from authoritative DNS name server in human readable form is:\n", response_header
 
         # If answer exist, answer = True and send answer (and all RRs from last response received) to client.
         # Else, check authority & additional section to determine next DNS name server to send query.
-        print "\nresponse RRs received from DNS server are:"
+        print "\nresponse RRs received from authoritative DNS name server are:"
         response_rrs = []
         offset = len(iq)
         for i in range(response_header._ancount + response_header._nscount + response_header._arcount):
@@ -181,22 +188,20 @@ def get_ip_addr(qe):
             for add in additional_rrs:
                 if add._type == RR.TYPE_A and ns._nsdn == add._dn:
                     next_name_server_ip = inet_ntoa(add._inaddr)
-                    print "Next name server domain is:", ns._nsdn
-                    print "Next name server IP is:", next_name_server_ip
+                    print "Next authoritative DNS name server domain is:", ns._nsdn
+                    print "Next authoritative DNS name server IP is:", next_name_server_ip
                     break
             if next_name_server_ip != "":
                 break
 
         if next_name_server_ip == "":
             print "\nGlue record not found"
-            for ns in authority_rrs:
-                dns_qe = QE(dn=ns._nsdn)
-                (dns_header, dns_rrs) = get_ip_addr(dns_qe)  # TODO if this doesnt work try another name server
-                print "\nFinding IP address of name server without glue record finished"
-                next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
-                print "Next name server domain is:", ns._nsdn
-                print "Next name server IP is:", next_name_server_ip
-                break
+            dns_qe = QE(dn=ns._nsdn)
+            (dns_header, dns_rrs) = get_ip_addr(dns_qe)
+            print "\nFinding IP address of authoritative DNS name server without glue record finished"
+            next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
+            print "Next authoritative DNS name server domain is:", ns._nsdn
+            print "Next authoritative DNS name server IP is:", next_name_server_ip
 
         dns_server_to_send = next_name_server_ip
 
@@ -209,13 +214,13 @@ def timeout_handler(signum, frame):
 # This is a simple, single-threaded server that takes successive
 # connections with each iteration of the following loop:
 while 1:
+    # Wait for query
     (data, address,) = ss.recvfrom(512)  # DNS limits UDP msgs to 512 bytes
     if not data:
         logger.error("client provided no data")
         continue
 
-    # Code to perform the recursive DNS lookup, putting the result in reply.
-
+    # Parse client query
     # print "\nQuery received from client is:\n", hexdump(data)
     query_header = Header.fromData(data)
     # print "Query header received from client is:\n", hexdump(query_header.pack())
@@ -230,6 +235,7 @@ while 1:
     signal.alarm(60)
 
     try:
+        # Send iterative queries to other DNS servers
         (response_header, response_rrs) = get_ip_addr(query_qe)
 
         # create DNS response to client
@@ -243,19 +249,19 @@ while 1:
         for rr in response_rrs:
             print rr
             reply += rr.pack()
-
+            # TODO return glue records for nameservers mentioned in authority section
         # print "\nReply to send back to client is:\n", hexdump(reply)
 
-        # TODO: Code end
         # TODO: caching
         # TODO: work through page 9 requirements.
 
         logger.log(DEBUG2, "our reply in full:")
         logger.log(DEBUG2, hexdump(reply))
 
+        # send DNS response to client
         ss.sendto(reply, address)
 
-        print "\nEND QUERY\n\n"
+        print "\n\nEND QUERY\n\n"
 
     except Exception, exc:
         if exc.message == "timeout":

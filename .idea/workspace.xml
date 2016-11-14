@@ -2,11 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="86cf165a-fc0a-4025-b58d-16df9042552c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ncsdns.log.1" afterPath="$PROJECT_DIR$/ncsdns.log.1" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ncsdns.log.2" afterPath="$PROJECT_DIR$/ncsdns.log.2" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ncsdns.log.3" afterPath="$PROJECT_DIR$/ncsdns.log.3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ncsdns.log.4" afterPath="$PROJECT_DIR$/ncsdns.log.4" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ncsdns.log.5" afterPath="$PROJECT_DIR$/ncsdns.log.5" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ncsdns.py" afterPath="$PROJECT_DIR$/ncsdns.py" />
     </list>
     <ignored path="py-dns-name-server.iws" />
@@ -31,8 +26,8 @@
       <file leaf-file-name="ncsdns.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ncsdns.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6318182">
-              <caret line="240" column="72" selection-start-line="240" selection-start-column="72" selection-end-line="240" selection-end-column="72" />
+            <state vertical-scroll-proportion="0.26363635">
+              <caret line="130" column="18" selection-start-line="130" selection-start-column="18" selection-end-line="130" selection-end-column="18" />
               <folding>
                 <element signature="e#19#40#0" expanded="true" />
               </folding>
@@ -347,8 +342,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ncsdns.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6318182">
-          <caret line="240" column="72" selection-start-line="240" selection-start-column="72" selection-end-line="240" selection-end-column="72" />
+        <state vertical-scroll-proportion="0.26363635">
+          <caret line="130" column="18" selection-start-line="130" selection-start-column="18" selection-end-line="130" selection-end-column="18" />
           <folding>
             <element signature="e#19#40#0" expanded="true" />
           </folding>
