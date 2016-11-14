@@ -125,19 +125,22 @@ sys.stdout.flush()
 setdefaulttimeout(TIMEOUT)
 cs = socket(AF_INET, SOCK_DGRAM)
 
+DNS_ROOT = "199.7.83.42"  # set root DNS server
+
 
 # recursive function which takes a question entry and sends recursive dns queries to other dns name servers
 # to get the IP address of the domain name specified in the question entry
-def get_ip_addr(qe):
-    dns_server_to_send = "199.7.83.42"  # root DNS server
+def get_ip_addr(qe, dns_server_to_send):
+    # TODO if dns server to send is root ("199.7.83.42"), check whether sub-domain of query exists in cache
 
-    while True:
-        # create DNS query to be sent to authoritative DNS name server
-        iq_id = randint(0, 65536)  # random 16 bit int
-        iq_header = Header(iq_id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1)
-        print "\nHeader of query to send to authoritative DNS name server in human readable form is:\n", iq_header
-        iq = iq_header.pack() + qe.pack()
-        # print "\nQuery to send to DNS server is:\n", hexdump(iq)
+    # create DNS query to be sent to authoritative DNS name server
+    iq_id = randint(0, 65536)  # random 16 bit int
+    iq_header = Header(iq_id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1)
+    print "\nHeader of query to send to authoritative DNS name server in human readable form is:\n", iq_header
+    iq = iq_header.pack() + qe.pack()
+    # print "\nQuery to send to DNS server is:\n", hexdump(iq)
+
+    for i in range(3):  # try sending to same name server 3x before giving up
         cs.sendto(iq, (dns_server_to_send, 53))  # DNS servers use port 53 by convention
 
         # get reply from server
@@ -150,60 +153,60 @@ def get_ip_addr(qe):
 
         # If no response from server
         except Exception, exc:
-            if exc.message == "timeout": # TODO give a 1/2 second timeout on waiting for reply
+            if exc.message == "timeout":  # TODO give a 1/2 second timeout on waiting for reply
                 print "\nTimeout, trying to resend query to same authoritative DNS name server"
-                # TODO after n tries, try different name server
-                continue
+                if i == 2:
+                    raise Exception("authoritative DNS name server down")  # TODO handle this
 
-        # print "\nResponse received from server is:\n", hexdump(response)
-        # print "Response header received from DNS server is:\n", hexdump(response_header.pack())
-        print "\nResponse header received from authoritative DNS name server in human readable form is:\n", response_header
+    # print "\nResponse received from server is:\n", hexdump(response)
+    # print "Response header received from DNS server is:\n", hexdump(response_header.pack())
+    print "\nResponse header received from authoritative DNS name server in human readable form is:\n", response_header
 
-        # If answer exist, answer = True and send answer (and all RRs from last response received) to client.
-        # Else, check authority & additional section to determine next DNS name server to send query.
-        print "\nresponse RRs received from authoritative DNS name server are:"
-        response_rrs = []
-        offset = len(iq)
-        for i in range(response_header._ancount + response_header._nscount + response_header._arcount):
-            response_rr = RR.fromData(response, offset)
-            print response_rr[0]
-            response_rrs.append(response_rr[0])
-            offset += response_rr[1]
+    # If answer exist, answer = True and send answer (and all RRs from last response received) to client.
+    # Else, check authority & additional section to determine next DNS name server to send query.
+    print "\nresponse RRs received from authoritative DNS name server are:"
+    response_rrs = []
+    offset = len(iq)
+    for i in range(response_header._ancount + response_header._nscount + response_header._arcount):
+        response_rr = RR.fromData(response, offset)
+        print response_rr[0]
+        response_rrs.append(response_rr[0])
+        offset += response_rr[1]
 
-        if response_header._ancount > 0:
-            if response_rrs[0]._type == RR.TYPE_CNAME:
-                cname_qe = QE(dn=response_rrs[0]._cname)
-                print "CNAME found - starting search for IP address of alias ", response_rrs[0]._cname
-                (return_header, return_rrs) = get_ip_addr(cname_qe)
-                return_header._ancount += 1
-                return_rrs.insert(0, response_rrs[0])
-                return return_header, return_rrs
-            else:
-                return response_header, response_rrs
+    if response_header._ancount > 0:
+        if response_rrs[0]._type == RR.TYPE_CNAME:
+            cname_qe = QE(dn=response_rrs[0]._cname)
+            print "CNAME found - starting search for IP address of alias ", response_rrs[0]._cname
+            (return_header, return_rrs) = get_ip_addr(cname_qe, DNS_ROOT)  # get IP address of CNAME
+            return_header._ancount += 1
+            return_rrs.insert(0, response_rrs[0])
+            return return_header, return_rrs
+        else:
+            return response_header, response_rrs
 
-        next_name_server_ip = ""
-        authority_rrs = response_rrs[:response_header._nscount]
-        additional_rrs = response_rrs[-response_header._arcount:]
-        for ns in authority_rrs:
-            for add in additional_rrs:
-                if add._type == RR.TYPE_A and ns._nsdn == add._dn:
-                    next_name_server_ip = inet_ntoa(add._inaddr)
-                    print "Next authoritative DNS name server domain is:", ns._nsdn
-                    print "Next authoritative DNS name server IP is:", next_name_server_ip
-                    break
-            if next_name_server_ip != "":
+    next_name_server_ip = ""
+    authority_rrs = response_rrs[:response_header._nscount]
+    additional_rrs = response_rrs[-response_header._arcount:]
+    for ns in authority_rrs:
+        for add in additional_rrs:
+            if add._type == RR.TYPE_A and ns._nsdn == add._dn:
+                next_name_server_ip = inet_ntoa(add._inaddr)
+                print "Next authoritative DNS name server domain is:", ns._nsdn
+                print "Next authoritative DNS name server IP is:", next_name_server_ip
                 break
+        if next_name_server_ip != "":
+            break
 
-        if next_name_server_ip == "":
-            print "\nGlue record not found"
-            dns_qe = QE(dn=ns._nsdn)
-            (dns_header, dns_rrs) = get_ip_addr(dns_qe)
-            print "\nFinding IP address of authoritative DNS name server without glue record finished"
-            next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
-            print "Next authoritative DNS name server domain is:", ns._nsdn
-            print "Next authoritative DNS name server IP is:", next_name_server_ip
+    if next_name_server_ip == "":
+        print "\nGlue record not found"
+        dns_qe = QE(dn=authority_rrs[0]._nsdn)
+        (dns_header, dns_rrs) = get_ip_addr(dns_qe, DNS_ROOT)  # get IP address of DNS name server without glue record
+        print "\nFinding IP address of authoritative DNS name server without glue record finished"
+        next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
+        print "Next authoritative DNS name server domain is:", ns._nsdn
+        print "Next authoritative DNS name server IP is:", next_name_server_ip
 
-        dns_server_to_send = next_name_server_ip
+    return get_ip_addr(qe, next_name_server_ip)
 
 
 # Register a handler for signal timeout
@@ -235,22 +238,22 @@ while 1:
     signal.alarm(60)
 
     try:
-        (response_header, response_rrs) = get_ip_addr(query_qe)  # Send iterative queries to other DNS servers
+        (received_header, received_rrs) = get_ip_addr(query_qe, DNS_ROOT)  # Send iterative queries
 
         signal.alarm(0)  # disable timeout alarm
 
         # create DNS response to client
         reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
-                              ancount=response_header._ancount, nscount=response_header._nscount,
-                              arcount=response_header._arcount, qr=True, aa=False, tc=False, rd=True, ra=True)
+                              ancount=received_header._ancount, nscount=received_header._nscount,
+                              arcount=received_header._arcount, qr=True, aa=False, tc=False, rd=True, ra=True)
         reply = reply_header.pack() + query_qe.pack()
         print "\nHeader to send back to client in human readable form is:\n", reply_header
         print "\nQE to send back to client in human readable form is:\n", query_qe
         print "\nRRs to send back to client in human readable form are:"
-        for rr in response_rrs:
+        for rr in received_rrs:
             print rr
             reply += rr.pack()
-            # TODO return glue records for nameservers mentioned in authority section
+            # TODO return glue records for name servers mentioned in authority section
         # print "\nReply to send back to client is:\n", hexdump(reply)
 
         # TODO: caching
