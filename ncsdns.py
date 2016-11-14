@@ -16,6 +16,8 @@ from gz01.dnslib.QE import QE
 from gz01.inetlib.types import *
 from gz01.util import *
 
+import signal
+
 # timeout in seconds to wait for reply
 TIMEOUT = 5
 
@@ -123,8 +125,10 @@ sys.stdout.flush()
 setdefaulttimeout(TIMEOUT)
 cs = socket(AF_INET, SOCK_DGRAM)
 
-# recursive function to send iterative queries to DNS name servers to get IP address
-def getIPAddr(qe):
+
+# recursive function which takes a question entry and sends recursive dns queries to other dns name servers
+# to get the IP address of the domain name specified in the question entry
+def get_ip_addr(qe):
     dns_server_to_send = "199.7.83.42"  # root DNS server (?)
 
     while True:
@@ -133,19 +137,24 @@ def getIPAddr(qe):
         iq_header = Header(iq_id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1)
         print "\nHeader to send to DNS server in human readable form is:\n", iq_header
         iq = iq_header.pack() + qe.pack()
-        print "\nQuery to send to DNS server is:\n", hexdump(iq)
-        print "IP Address of DNS Server is:", dns_server_to_send
+        # print "\nQuery to send to DNS server is:\n", hexdump(iq)
+        # print "IP Address of DNS Server is:", dns_server_to_send
         cs.sendto(iq, (dns_server_to_send, 53))  # DNS servers use port 53 by convention (?)
 
         # get reply from server
-        (response, address_not_used,) = cs.recvfrom(512)
-        print "\nResponse received from server is:\n", hexdump(response)
-        response_header = Header.fromData(response)
-        print "Response header received from DNS server is:\n", hexdump(response_header.pack())
-        print "Response header received from DNS server in human readable form is:\n", response_header
+        while True:
+            (response, address_not_used,) = cs.recvfrom(512)
+            response_header = Header.fromData(response)
+            if response_header._id == iq_id:
+                break
+
+        # print "\nResponse received from server is:\n", hexdump(response)
+        # print "Response header received from DNS server is:\n", hexdump(response_header.pack())
+        print "\nResponse header received from DNS server in human readable form is:\n", response_header
 
         # If answer exist, answer = True and send answer (and all RRs from last response received) to client.
         # Else, check authority & additional section to determine next DNS name server to send query.
+        print "\nresponse RRs received from DNS server are:"
         response_rrs = []
         offset = len(iq)
         for i in range(response_header._ancount + response_header._nscount + response_header._arcount):
@@ -155,11 +164,10 @@ def getIPAddr(qe):
             offset += response_rr[1]
 
         if response_header._ancount > 0:
-            print "\nanswer found. No. of answers is:", response_header._ancount
             if response_rrs[0]._type == RR.TYPE_CNAME:
                 cname_qe = QE(dn=response_rrs[0]._cname)
                 print "CNAME found - starting search for IP address of alias ", response_rrs[0]._cname
-                (return_header, return_rrs) = getIPAddr(cname_qe)
+                (return_header, return_rrs) = get_ip_addr(cname_qe)
                 return_header._ancount += 1
                 return_rrs.insert(0, response_rrs[0])
                 return return_header, return_rrs
@@ -171,20 +179,19 @@ def getIPAddr(qe):
         additional_rrs = response_rrs[-response_header._arcount:]
         for ns in authority_rrs:
             for add in additional_rrs:
-                if add._type == RR.TYPE_A:
-                    if ns._nsdn == add._dn:
-                        next_name_server_ip = inet_ntoa(add._inaddr)
-                        print "Next name server domain is:", ns._nsdn
-                        print "Next name server IP is:", next_name_server_ip
-                        break
+                if add._type == RR.TYPE_A and ns._nsdn == add._dn:
+                    next_name_server_ip = inet_ntoa(add._inaddr)
+                    print "Next name server domain is:", ns._nsdn
+                    print "Next name server IP is:", next_name_server_ip
+                    break
             if next_name_server_ip != "":
                 break
 
         if next_name_server_ip == "":
-            print "Glue record not found"
+            print "\nGlue record not found"
             for ns in authority_rrs:
                 dns_qe = QE(dn=ns._nsdn)
-                (dns_header, dns_rrs) = getIPAddr(dns_qe) # TODO if this doesnt work try another name server
+                (dns_header, dns_rrs) = get_ip_addr(dns_qe)  # TODO if this doesnt work try another name server
                 print "\nFinding IP address of name server without glue record finished"
                 next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
                 print "Next name server domain is:", ns._nsdn
@@ -192,6 +199,12 @@ def getIPAddr(qe):
                 break
 
         dns_server_to_send = next_name_server_ip
+
+
+# Register a handler for signal timeout
+def timeout_handler(signum, frame):
+    raise Exception("timeout")
+
 
 # This is a simple, single-threaded server that takes successive
 # connections with each iteration of the following loop:
@@ -201,35 +214,49 @@ while 1:
         logger.error("client provided no data")
         continue
 
-    # TODO: Insert code here to perform the recursive DNS lookup, putting the result in reply.
-    print "Query received from client is:\n", hexdump(data)
+    # Code to perform the recursive DNS lookup, putting the result in reply.
+
+    # print "\nQuery received from client is:\n", hexdump(data)
     query_header = Header.fromData(data)
-    print "Query header received from client is:\n", hexdump(query_header.pack())
+    # print "Query header received from client is:\n", hexdump(query_header.pack())
     print "Query header received from client in human readable form is:\n", query_header
     query_qe = QE.fromData(data, 12)
-    print "\nQuery QE received from client is:\n", hexdump(query_qe.pack())
+    # print "\nQuery QE received from client is:\n", hexdump(query_qe.pack())
     print "Query QE received from client in human readable form is:\n", query_qe
     print "\nClient's address is:\n", address
 
-    (response_header, response_rrs) = getIPAddr(query_qe)
+    # start timeout timer
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(60)
 
-    # create DNS response to client
-    reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
-                          ancount=response_header._ancount, nscount=response_header._nscount,
-                          arcount=response_header._arcount, qr=True, aa=False, tc=False, rd=True, ra=True)
-    reply = reply_header.pack() + query_qe.pack()
-    for rr in response_rrs:
-        reply += rr.pack()
-    print "\nHeader to send back to client in human readable form is:\n", reply_header
-    print "\nReply to send back to client is:\n", hexdump(reply)
+    try:
+        (response_header, response_rrs) = get_ip_addr(query_qe)
 
-    # TODO: Code end
-    # TODO: caching
-    # TODO: work through page 9 requirements.
+        # create DNS response to client
+        reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
+                              ancount=response_header._ancount, nscount=response_header._nscount,
+                              arcount=response_header._arcount, qr=True, aa=False, tc=False, rd=True, ra=True)
+        reply = reply_header.pack() + query_qe.pack()
+        print "\nHeader to send back to client in human readable form is:\n", reply_header
+        print "\nQE to send back to client in human readable form is:\n", query_qe
+        print "\nRRs to send back to client in human readable form are:"
+        for rr in response_rrs:
+            print rr
+            reply += rr.pack()
 
-    logger.log(DEBUG2, "our reply in full:")
-    logger.log(DEBUG2, hexdump(reply))
+        # print "\nReply to send back to client is:\n", hexdump(reply)
 
-    ss.sendto(reply, address)
+        # TODO: Code end
+        # TODO: caching
+        # TODO: work through page 9 requirements.
 
-    print "\n\nEND QUERY\n\n"
+        logger.log(DEBUG2, "our reply in full:")
+        logger.log(DEBUG2, hexdump(reply))
+
+        ss.sendto(reply, address)
+
+        print "\nEND QUERY\n\n"
+
+    except Exception, exc:
+        if exc.message == "timeout":
+            print "\n\nQUERY TIMEOUT\n\n"
