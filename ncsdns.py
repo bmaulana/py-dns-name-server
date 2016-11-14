@@ -164,6 +164,7 @@ def getIPAddr(qe):
             break
 
         next_name_server = ""
+        next_name_server_ip = "";
         for rr in response_rrs:
             if rr._type == RR.TYPE_NS:
                 if next_name_server == "":
@@ -171,11 +172,17 @@ def getIPAddr(qe):
                     print "Next name server is:", next_name_server
             if rr._type == RR.TYPE_A:
                 if next_name_server == rr._dn:
-                    next_name_server = inet_ntoa(rr._inaddr)
+                    next_name_server_ip = inet_ntoa(rr._inaddr)
                     print "Next name server is:", next_name_server
-            # TODO handle if glue not found
 
-        dns_server_to_send = next_name_server
+        if next_name_server_ip == "":
+            # glue record not found
+            domainName = DomainName(next_name_server)
+            dns_qe = QE(dn=domainName)
+            (dns_header, dns_rrs) = getIPAddr(dns_qe)
+            next_name_server_ip = inet_ntoa(dns_rrs[1]._inaddr)
+
+        dns_server_to_send = next_name_server_ip
 
     return response_header, response_rrs
 
