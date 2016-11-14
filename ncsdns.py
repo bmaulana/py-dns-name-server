@@ -172,7 +172,7 @@ def getIPAddr(qe):
             for add in additional_rrs:
                 if add._type == RR.TYPE_A:
                     if ns._nsdn == add._dn:
-                        next_name_server_ip = inet_ntoa(rr._inaddr)
+                        next_name_server_ip = inet_ntoa(add._inaddr)
                         print "Next name server domain is:", ns._nsdn
                         print "Next name server IP is:", next_name_server_ip
                         break
