@@ -125,10 +125,9 @@ cs = socket(AF_INET, SOCK_DGRAM)
 
 # recursive function to send iterative queries to DNS name servers to get IP address
 def getIPAddr(qe):
-    answer = False
     dns_server_to_send = "199.7.83.42"  # root DNS server (?)
 
-    while not answer:
+    while True:
         # create DNS query to be sent to server
         iq_id = randint(0, 65536)  # random 16 bit int
         iq_header = Header(iq_id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1)
@@ -160,31 +159,37 @@ def getIPAddr(qe):
 
         if response_header._ancount > 0:
             print "\nanswer found. No. of answers is:", response_header._ancount
-	    # TODO if answer is CNAME
-            answer = True
-            break
+            if response_rrs[0]._type == RR.TYPE_CNAME:
+                cname_qe = QE(response_rrs[0]._cname)
+                print "CNAME found - starting search for IP address of alias ", response_rrs[0]._cname
+		print "WHY THE FUCK IS THIS A NULL POINTER ", cname_qe
+                return getIPAddr(cname_qe)
+            else:
+                return response_header, response_rrs
 
         next_name_server = ""
-        next_name_server_ip = "";
+        next_name_server_ip = ""
         for rr in response_rrs:
             if rr._type == RR.TYPE_NS:
                 if next_name_server == "":
                     next_name_server = rr._nsdn
-                    print "Next name server is:", next_name_server
+                    print "Next name server domain is:", next_name_server
             if rr._type == RR.TYPE_A:
                 if next_name_server == rr._dn:
                     next_name_server_ip = inet_ntoa(rr._inaddr)
-                    print "Next name server is:", next_name_server
+                    print "Next name server IP is:", next_name_server_ip
 
         if next_name_server_ip == "":
             # glue record not found
             dns_qe = QE(dn=next_name_server)
+            print "Glue record not found"
             (dns_header, dns_rrs) = getIPAddr(dns_qe)
-            next_name_server_ip = inet_ntoa(dns_rrs[1]._inaddr)
+            print "\nFinding IP address of name server without glue record finished"
+            next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
+            print "Next name server domain is:", next_name_server
+            print "Next name server IP is:", next_name_server_ip
 
         dns_server_to_send = next_name_server_ip
-
-    return response_header, response_rrs
 
 # This is a simple, single-threaded server that takes successive
 # connections with each iteration of the following loop:
@@ -205,7 +210,7 @@ while 1:
     print "\nClient's address is:\n", address
 
     (response_header, response_rrs) = getIPAddr(query_qe)
-    
+
     # create DNS response to client
     reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
                           ancount=response_header._ancount, nscount=response_header._nscount,
@@ -215,7 +220,7 @@ while 1:
         reply += rr.pack()
     print "\nHeader to send back to client in human readable form is:\n", reply_header
     print "\nReply to send back to client is:\n", hexdump(reply)
-       
+
     # TODO: Code end
     # TODO: caching
     # TODO: work through page 9 requirements.

@@ -160,7 +160,7 @@ def getIPAddr(qe):
         if response_header._ancount > 0:
             print "\nanswer found. No. of answers is:", response_header._ancount
             if response_rrs[0]._type == RR.TYPE_CNAME:
-                cname_qe = QE(response_rrs[0]._cname)
+                cname_qe = QE(dn=response_rrs[0]._cname)
                 print "CNAME found - starting search for IP address of alias ", response_rrs[0]._cname
                 return getIPAddr(cname_qe)
             else:
