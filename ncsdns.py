@@ -164,6 +164,7 @@ def getIPAddr(qe):
                 print "CNAME found - starting search for IP address of alias ", response_rrs[0]._cname
                 (return_header, return_rrs) = getIPAddr(cname_qe)
                 return_rrs.insert(0, response_rrs[0])
+                return return_header, return_rrs
             else:
                 return response_header, response_rrs
 
