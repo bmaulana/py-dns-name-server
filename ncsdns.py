@@ -146,12 +146,9 @@ def getIPAddr(qe):
 
         # If answer exist, answer = True and send answer (and all RRs from last response received) to client.
         # Else, check authority & additional section to determine next DNS name server to send query.
-        num_rrs = response_header._ancount + response_header._nscount + response_header._arcount
-        print "\nnumber of RRs in response is:", num_rrs
-
         response_rrs = []
         offset = len(iq)
-        for i in range(num_rrs):
+        for i in range(response_header._ancount + response_header._nscount + response_header._arcount):
             response_rr = RR.fromData(response, offset)
             print response_rr[0]
             response_rrs.append(response_rr[0])
@@ -168,27 +165,30 @@ def getIPAddr(qe):
             else:
                 return response_header, response_rrs
 
-        next_name_server = ""
         next_name_server_ip = ""
-        for rr in response_rrs:
-            if rr._type == RR.TYPE_NS:
-                if next_name_server == "":
-                    next_name_server = rr._nsdn
-                    print "Next name server domain is:", next_name_server
-            if rr._type == RR.TYPE_A:
-                if next_name_server == rr._dn:
-                    next_name_server_ip = inet_ntoa(rr._inaddr)
-                    print "Next name server IP is:", next_name_server_ip
+        authority_rrs = response_rrs[:response_header._nscount]
+        additional_rrs = response_rrs[-response_header._arcount:]
+        for ns in authority_rrs:
+            for add in additional_rrs:
+                if add._type == RR.TYPE_A:
+                    if ns._nsdn == add._dn:
+                        next_name_server_ip = inet_ntoa(rr._inaddr)
+                        print "Next name server domain is:", ns._nsdn
+                        print "Next name server IP is:", next_name_server_ip
+                        break
+            if next_name_server_ip != "":
+                break
 
         if next_name_server_ip == "":
-            # glue record not found
-            dns_qe = QE(dn=next_name_server)
             print "Glue record not found"
-            (dns_header, dns_rrs) = getIPAddr(dns_qe)
-            print "\nFinding IP address of name server without glue record finished"
-            next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
-            print "Next name server domain is:", next_name_server
-            print "Next name server IP is:", next_name_server_ip
+            for ns in authority_rrs:
+                dns_qe = QE(dn=ns._nsdn)
+                (dns_header, dns_rrs) = getIPAddr(dns_qe) # TODO if this doesnt work try another name server
+                print "\nFinding IP address of name server without glue record finished"
+                next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
+                print "Next name server domain is:", ns._nsdn
+                print "Next name server IP is:", next_name_server_ip
+                break
 
         dns_server_to_send = next_name_server_ip
 
