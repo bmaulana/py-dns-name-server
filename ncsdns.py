@@ -123,6 +123,62 @@ sys.stdout.flush()
 setdefaulttimeout(TIMEOUT)
 cs = socket(AF_INET, SOCK_DGRAM)
 
+# recursive function to send iterative queries to DNS name servers to get IP address
+def getIPAddr(qe):
+    answer = False
+    dns_server_to_send = "199.7.83.42"  # root DNS server (?)
+
+    while not answer:
+        # create DNS query to be sent to server
+        iq_id = randint(0, 65536)  # random 16 bit int
+        iq_header = Header(iq_id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1)
+        print "\nHeader to send to DNS server in human readable form is:\n", iq_header
+        iq = iq_header.pack() + qe.pack()
+        print "\nQuery to send to DNS server is:\n", hexdump(iq)
+        print "IP Address of DNS Server is:", dns_server_to_send
+        cs.sendto(iq, (dns_server_to_send, 53))  # DNS servers use port 53 by convention (?)
+
+        # get reply from server
+        (response, address_not_used,) = cs.recvfrom(512)
+        print "\nResponse received from server is:\n", hexdump(response)
+        response_header = Header.fromData(response)
+        print "Response header received from DNS server is:\n", hexdump(response_header.pack())
+        print "Response header received from DNS server in human readable form is:\n", response_header
+
+        # If answer exist, answer = True and send answer (and all RRs from last response received) to client.
+        # Else, check authority & additional section to determine next DNS name server to send query.
+        num_rrs = response_header._ancount + response_header._nscount + response_header._arcount
+        print "\nnumber of RRs in response is:", num_rrs
+
+        response_rrs = []
+        offset = len(iq)
+        for i in range(num_rrs):
+            response_rr = RR.fromData(response, offset)
+            print response_rr[0]
+            response_rrs.append(response_rr[0])
+            offset += response_rr[1]
+
+        if response_header._ancount > 0:
+            print "\nanswer found. No. of answers is:", response_header._ancount
+            answer = True
+            break
+
+        next_name_server = ""
+        for rr in response_rrs:
+            if rr._type == RR.TYPE_NS:
+                if next_name_server == "":
+                    next_name_server = rr._nsdn
+                    print "Next name server is:", next_name_server
+            if rr._type == RR.TYPE_A:
+                if next_name_server == rr._dn:
+                    next_name_server = inet_ntoa(rr._inaddr)
+                    print "Next name server is:", next_name_server
+            # TODO handle if glue not found
+
+        dns_server_to_send = next_name_server
+
+    return response_header, response_rrs
+
 # This is a simple, single-threaded server that takes successive
 # connections with each iteration of the following loop:
 while 1:
@@ -141,61 +197,12 @@ while 1:
     print "Query QE received from client in human readable form is:\n", query_qe
     print "\nClient's address is:\n", address
 
-    answer = False
-    dns_server_to_send = "199.7.83.42"  # root DNS server (?)
-
-    while not answer:
-        # create DNS query to be sent to server
-        iq_id = randint(0, 65536)  # random 16 bit int
-        iq_header = Header(iq_id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1)
-        print "\nHeader to send to DNS server in human readable form is:\n", iq_header
-        iq = iq_header.pack() + query_qe.pack()
-        print "\nQuery to send to DNS server is:\n", hexdump(iq)
-        print "IP Address of DNS Server is:", dns_server_to_send
-        cs.sendto(iq, (dns_server_to_send, 53))  # DNS servers use port 53 by convention (?)
-
-        # get reply from server
-        (response, address_not_used,) = cs.recvfrom(512)
-        print "\nResponse received from server is:\n", hexdump(response)
-        response_header = Header.fromData(response)
-        print "Response header received from DNS server is:\n", hexdump(response_header.pack())
-        print "Response header received from DNS server in human readable form is:\n", response_header
-
-        # TODO parse response.
-        # If answer exist, answer = True and send answer (and all RRs from last response received) to client.
-        # Else, check authority & additional section to determine next DNS name server to send query.
-        num_rrs = response_header._ancount + response_header._nscount + response_header._arcount
-        print "\nnumber of RRs in response is:", num_rrs
-
-        response_rrs = []
-        offset = len(iq)
-        for i in range(num_rrs):
-            response_rr = RR.fromData(response, offset)
-            print response_rr[0]
-            response_rrs.append(response_rr[0])
-            offset += response_rr[1]
-
-        if response_header._ancount > 0:
-            print "\nanswer found. No. of answers is:", response_header._ancount
-            answer = True
-            break    
-
-        next_name_server = ""
-        for rr in response_rrs:
-            if rr._type == RR.TYPE_NS:
-                if next_name_server == "":
-                    next_name_server = rr._nsdn
-                    print "Next name server is:", next_name_server
-            if rr._type == RR.TYPE_A:
-                if next_name_server == rr._dn:
-                    next_name_server = inet_ntoa(rr._inaddr)
-                    print "Next name server is:", next_name_server
-            # TODO handle if glue not found
-
-        dns_server_to_send = next_name_server
+    (response_header, response_rrs) = getIPAddr(query_qe)
     
     # create DNS response to client
-    reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount, ancount=response_header._ancount, nscount=response_header._nscount, arcount=response_header._arcount, qr=True, aa=False, tc=False, rd=True, ra=True)
+    reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
+                          ancount=response_header._ancount, nscount=response_header._nscount,
+                          arcount=response_header._arcount, qr=True, aa=False, tc=False, rd=True, ra=True)
     reply = reply_header.pack() + query_qe.pack()
     for rr in response_rrs:
         reply += rr.pack()
