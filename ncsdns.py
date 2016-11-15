@@ -153,7 +153,7 @@ def get_ip_addr(qe, dns_server_to_send):
 
         # If no response from server
         except Exception, exc:
-            if exc.message == "timeout":  # TODO give a 1/2 second timeout on waiting for reply
+            if exc.message == "timeout":  # TODO give a 1 or 2 second timeout on waiting for reply
                 print "\nTimeout, trying to resend query to same authoritative DNS name server"
                 if i == 2:
                     raise Exception("authoritative DNS name server down")  # TODO handle this
