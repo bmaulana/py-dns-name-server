@@ -140,30 +140,30 @@ def get_ip_addr(qe, dns_server_to_send):
     iq = iq_header.pack() + qe.pack()
     # print "\nQuery to send to DNS server is:\n", hexdump(iq)
 
-    for i in range(3):  # try sending to same name server 3x before giving up
+    for i in range(3):  # try re-sending to same name server 3x before giving up
         cs.sendto(iq, (dns_server_to_send, 53))  # DNS servers use port 53 by convention
 
         # get reply from server
         try:
             while True:
+                cs.settimeout(2)
                 (response, address_not_used,) = cs.recvfrom(512)
+                cs.settimeout(None)
+
                 response_header = Header.fromData(response)
                 if response_header._id == iq_id:
                     break
 
         # If no response from server
-        except Exception, exc:
-            if exc.message == "timeout":  # TODO give a 1 or 2 second timeout on waiting for reply
-                print "\nTimeout, trying to resend query to same authoritative DNS name server"
-                if i == 2:
-                    raise Exception("authoritative DNS name server down")  # TODO handle this
+        except timeout:
+            print "\nTimeout, trying to resend query to same authoritative DNS name server"
+            cs.settimeout(None)
+            if i == 2:
+                raise Exception("authoritative DNS name server down")  # TODO handle this
 
     # print "\nResponse received from server is:\n", hexdump(response)
     # print "Response header received from DNS server is:\n", hexdump(response_header.pack())
     print "\nResponse header received from authoritative DNS name server in human readable form is:\n", response_header
-
-    # If answer exist, answer = True and send answer (and all RRs from last response received) to client.
-    # Else, check authority & additional section to determine next DNS name server to send query.
     print "\nresponse RRs received from authoritative DNS name server are:"
     response_rrs = []
     offset = len(iq)
@@ -173,6 +173,8 @@ def get_ip_addr(qe, dns_server_to_send):
         response_rrs.append(response_rr[0])
         offset += response_rr[1]
 
+    # If answer exist, send answer (and all RRs from last response received) to client.
+    # Else, check authority & additional section to determine next DNS name server to send query.
     if response_header._ancount > 0:
         if response_rrs[0]._type == RR.TYPE_CNAME:
             cname_qe = QE(dn=response_rrs[0]._cname)
