@@ -187,12 +187,19 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
 
         response_rrs.append(rrec)
         if rrec._type == RR.TYPE_A:
-            if i < response_header._ancount:
-                acache[rrec._dn] = ACacheEntry(dict([(InetAddr.fromNetwork(rrec._inaddr),
-                                                      CacheEntry(expiration=rrec._ttl))]))
+            if rrec._dn not in acache:
+                if i < response_header._ancount:
+                    acache[rrec._dn] = ACacheEntry(dict([(InetAddr.fromNetwork(rrec._inaddr),
+                                                          CacheEntry(expiration=rrec._ttl))]))
+                else:
+                    acache[rrec._dn] = ACacheEntry(dict([(InetAddr.fromNetwork(rrec._inaddr),
+                                                          CacheEntry(expiration=rrec._ttl, authoritative=True))]))
             else:
-                acache[rrec._dn] = ACacheEntry(dict([(InetAddr.fromNetwork(rrec._inaddr),
-                                                      CacheEntry(expiration=rrec._ttl, authoritative=True))]))
+                if i < response_header._ancount:
+                    acache[rrec._dn]._dict[InetAddr.fromNetwork(rrec._inaddr)] = CacheEntry(expiration=rrec._ttl)
+                else:
+                    acache[rrec._dn]._dict[InetAddr.fromNetwork(rrec._inaddr)] = CacheEntry(expiration=rrec._ttl,
+                                                                                            authoritative=True)
         if rrec._type == RR.TYPE_CNAME:
             cnamecache[rrec._dn] = CnameCacheEntry(rrec._cname, expiration=rrec._ttl)
         if rrec._type == RR.TYPE_NS:
