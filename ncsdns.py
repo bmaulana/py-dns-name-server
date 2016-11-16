@@ -133,7 +133,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
         return_header = Header(randint(0, 65536), Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1, qr=True, aa=True)
         return_rrs = []
         for key in acache[qe._dn]._dict.keys():
-            return_rrs += RR_A(qe._dn, acache[qe._dn]._dict[key]._expiration, key)
+            return_rrs.append(RR_A(qe._dn, acache[qe._dn]._dict[key]._expiration, key.toNetwork()))
             return_header._ancount += 1
         return return_header, return_rrs
 
