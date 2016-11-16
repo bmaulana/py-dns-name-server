@@ -349,7 +349,7 @@ while 1:
             reply += received_rrs[i].pack()
             last_cname = received_rrs[i]._dn
 
-        # if NS of lowest subdomain of answer in cache (e.g. b.c. for a.b.c.), return it in authority section
+        # if NS of parent domain of answer in cache, return it in authority section
         parent = last_cname.parent()
         authdomains = []
         print "\nAuthority section to send back to client in human readable form are:"
@@ -361,23 +361,12 @@ while 1:
                 reply_header._nscount += 1
                 reply += rr.pack()
 
-        # return glue records for name servers mentioned in authority section (cache + lookup if not there)
+        # return glue records for name servers mentioned in authority section (if exist in cache)
         print "\nAdditional section to send back to client in human readable form are:"
         for domain in authdomains:
             if domain in acache:
                 for key in acache[domain]._dict.keys():
                     rr = RR_A(domain, acache[domain]._dict[key]._expiration, key.toNetwork())
-                    print rr
-                    reply_header._arcount += 1
-                    reply += rr.pack()
-            else:
-                print "\nGlue record not found in cache - Sending query"
-                glue_qe = QE(dn=domain)
-                (glue_header, glue_rrs) = get_ip_addr(glue_qe)
-                print "\nGlue record found"
-
-                for i in range(glue_header._ancount):
-                    rr = RR_A(domain, glue_rrs[i]._ttl, glue_rrs[i]._inaddr)
                     print rr
                     reply_header._arcount += 1
                     reply += rr.pack()
