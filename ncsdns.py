@@ -174,7 +174,6 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
     iq_header = Header(iq_id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1)
     print "\nHeader of query to send to authoritative DNS name server in human readable form is:\n", iq_header
     iq = iq_header.pack() + qe.pack()
-    # print "\nQuery to send to DNS server is:\n", hexdump(iq)
 
     for i in range(3):  # try re-sending to same name server 3x before giving up
         cs.sendto(iq, (dns_server_to_send, 53))  # DNS servers use port 53 by convention
@@ -197,8 +196,6 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
             if i == 2:
                 raise Exception("authoritative DNS name server down")
 
-    # print "\nResponse received from server is:\n", hexdump(response)
-    # print "Response header received from DNS server is:\n", hexdump(response_header.pack())
     print "\nResponse header received from authoritative DNS name server in human readable form is:\n", response_header
     print "\nresponse RRs received from authoritative DNS name server are:"
     response_rrs = []
@@ -251,7 +248,6 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
     additional_rrs = response_rrs[-response_header._arcount:]
     tried = []
     for ns in authority_rrs:
-        # TODO check glue records from cache as well (maybe ns has a cached IP address in acache)
         for add in additional_rrs:
             if add._type == RR.TYPE_A and ns._nsdn == add._dn:
                 next_name_server_ip = inet_ntoa(add._inaddr)
@@ -260,6 +256,22 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
 
                 try:
                     return get_ip_addr(qe, dns_server_to_send=next_name_server_ip)
+                except Exception, e:
+                    if e.message != "authoritative DNS name server down":
+                        print "Unhandled Exception:", e
+                        print ""
+                        raise e
+                    print "\nauthoritative DNS name server down, trying next one"
+                    tried.append(ns)
+                    break
+
+        if ns._nsdn in acache:
+            for ip in acache[ns._nsdn]._dict.keys():
+                print "Next authoritative DNS name server domain is:", ns._nsdn
+                print "Next authoritative DNS name server IP is:", ip
+
+                try:
+                    return get_ip_addr(qe, dns_server_to_send=str(ip))
                 except Exception, e:
                     if e.message != "authoritative DNS name server down":
                         print "Unhandled Exception:", e
@@ -286,7 +298,6 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
             print "\nCannot find IP address of ", dns_qe
             continue
 
-        # TODO add glue records to cache (as A records, acache)
         next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
         print "\nNext authoritative DNS name server domain is:", ns._nsdn
         print "Next authoritative DNS name server IP is:", next_name_server_ip
@@ -311,14 +322,11 @@ while 1:
         continue
 
     # Parse client query
-    # print "\nQuery received from client is:\n", hexdump(data)
     query_header = Header.fromData(data)
-    # print "Query header received from client is:\n", hexdump(query_header.pack())
     print "Query header received from client in human readable form is:\n", query_header
     query_qe = QE.fromData(data, 12)
-    # print "\nQuery QE received from client is:\n", hexdump(query_qe.pack())
     print "\nQuery QE received from client in human readable form is:\n", query_qe
-    print "\nClient's address is:\n", address
+    print "\nClient's address is: ", address
 
     # start timeout timer
     signal.signal(signal.SIGALRM, timeout_handler)
@@ -326,8 +334,6 @@ while 1:
 
     try:
         (received_header, received_rrs) = get_ip_addr(query_qe)  # Send iterative queries
-
-        signal.alarm(0)  # disable timeout alarm
 
         # create DNS response to client
         reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
@@ -362,11 +368,20 @@ while 1:
                     print rr
                     reply_header._arcount += 1
                     reply += rr.pack()
+            else:
+                print "\nGlue record not found in cache - Sending query"
+                (glue_header, glue_rrs) = get_ip_addr(domain)
+                print "\nGlue record found"
+
+                for i in range(glue_header._ancount):
+                    rr = RR_A(domain, glue_rrs[i]._ttl, glue_rrs[i]._inaddr)
+                    print rr
+                    reply_header._arcount += 1
+                    reply += rr.pack()
 
         reply = reply_header.pack() + reply
 
         # TODO remove records from cache when TTL over
-        # print "\nReply to send back to client is:\n", hexdump(reply)
 
         logger.log(DEBUG2, "our reply in full:")
         logger.log(DEBUG2, hexdump(reply))
@@ -374,6 +389,7 @@ while 1:
         # send DNS response to client
         ss.sendto(reply, address)
 
+        signal.alarm(0)  # disable timeout alarm
         print "\n\nEND QUERY\n\n"
 
     except Exception, exc:
