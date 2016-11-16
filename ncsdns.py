@@ -172,10 +172,10 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
     # create DNS query to be sent to authoritative DNS name server
     iq_id = randint(0, 65536)  # random 16 bit int
     iq_header = Header(iq_id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1)
-    print "\nHeader of query to send to authoritative DNS name server in human readable form is:\n", iq_header
     iq = iq_header.pack() + qe.pack()
 
-    for i in range(3):  # try re-sending to same name server 3x before giving up
+    for tries in range(3):  # try re-sending to same name server 3x before giving up
+        print "Sending iterative query to authoritative DNS name server..."
         cs.sendto(iq, (dns_server_to_send, 53))  # DNS servers use port 53 by convention
 
         # get reply from server
@@ -193,28 +193,28 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
         except timeout:
             print "\nTimeout, trying to resend query to same authoritative DNS name server"
             cs.settimeout(None)
-            if i == 2:
+            if tries == 2:
                 raise Exception("authoritative DNS name server down")
 
     print "\nResponse header received from authoritative DNS name server in human readable form is:\n", response_header
     print "\nresponse RRs received from authoritative DNS name server are:"
     response_rrs = []
     offset = len(iq)
-    for i in range(response_header._ancount + response_header._nscount + response_header._arcount):
+    for norr in range(response_header._ancount + response_header._nscount + response_header._arcount):
         (rrec, offset_inc) = RR.fromData(response, offset)
         print rrec
         response_rrs.append(rrec)
 
         if rrec._type == RR.TYPE_A:
             if rrec._dn not in acache:
-                if i < response_header._ancount:
+                if norr < response_header._ancount:
                     acache[rrec._dn] = ACacheEntry(dict([(InetAddr.fromNetwork(rrec._inaddr),
                                                           CacheEntry(expiration=rrec._ttl))]))
                 else:
                     acache[rrec._dn] = ACacheEntry(dict([(InetAddr.fromNetwork(rrec._inaddr),
                                                           CacheEntry(expiration=rrec._ttl, authoritative=True))]))
             else:
-                if i < response_header._ancount:
+                if norr < response_header._ancount:
                     acache[rrec._dn]._dict[InetAddr.fromNetwork(rrec._inaddr)] = CacheEntry(expiration=rrec._ttl)
                 else:
                     acache[rrec._dn]._dict[InetAddr.fromNetwork(rrec._inaddr)] = CacheEntry(expiration=rrec._ttl,
