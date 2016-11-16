@@ -125,13 +125,11 @@ sys.stdout.flush()
 setdefaulttimeout(TIMEOUT)
 cs = socket(AF_INET, SOCK_DGRAM)
 
-DNS_ROOT = "199.7.83.42"  # set root DNS server
-
 
 # recursive function which takes a question entry and sends recursive dns queries to other dns name servers
 # to get the IP address of the domain name specified in the question entry
-def get_ip_addr(qe, dns_server_to_send):
-    # TODO if dns server to send is root ("199.7.83.42"), check whether sub-domain of query exists in cache
+def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
+    # TODO if dns server to send is root, check whether sub-domain of query exists in cache
 
     # create DNS query to be sent to authoritative DNS name server
     iq_id = randint(0, 65536)  # random 16 bit int
@@ -168,11 +166,24 @@ def get_ip_addr(qe, dns_server_to_send):
     response_rrs = []
     offset = len(iq)
     for i in range(response_header._ancount + response_header._nscount + response_header._arcount):
-        response_rr = RR.fromData(response, offset)
-        print response_rr[0]
-        print "TTL=", response_rr[0]._ttl
-        response_rrs.append(response_rr[0])
-        offset += response_rr[1]
+        (rrec, offset_inc) = RR.fromData(response, offset)
+        print rrec
+        print "TTL=", rrec._ttl
+
+        response_rrs.append(rrec)
+        if rrec._type == RR.TYPE_A:
+            if i < response_header._ancount:
+                acache[rrec._dn] = ACacheEntry(dict([(InetAddr.fromNetwork(rrec._inaddr),
+                                                      CacheEntry(expiration=rrec._ttl))]))
+            else:
+                acache[rrec._dn] = ACacheEntry(dict([(InetAddr.fromNetwork(rrec._inaddr),
+                                                      CacheEntry(expiration=rrec._ttl, authoritative=True))]))
+        if rrec._type == RR.TYPE_CNAME:
+            cnamecache[rrec._dn] = CnameCacheEntry(rrec._cname, expiration=rrec._ttl)
+        if rrec._type == RR.TYPE_NS:
+            nscache[rrec._dn] = OrderedDict([rrec._nsdn, CacheEntry(expiration=rrec._ttl, authoritative=True)])
+
+        offset += offset_inc
 
     # If answer exist, send answer (and all RRs from last response received) to client.
     # Else, check authority & additional section to determine next DNS name server to send query.
@@ -180,7 +191,7 @@ def get_ip_addr(qe, dns_server_to_send):
         if response_rrs[0]._type == RR.TYPE_CNAME:
             cname_qe = QE(dn=response_rrs[0]._cname)
             print "CNAME found - starting search for IP address of alias ", response_rrs[0]._cname
-            (return_header, return_rrs) = get_ip_addr(cname_qe, DNS_ROOT)  # get IP address of CNAME
+            (return_header, return_rrs) = get_ip_addr(cname_qe)  # get IP address of CNAME
             return_header._ancount += 1
             return_rrs.insert(0, response_rrs[0])
             return return_header, return_rrs
@@ -198,7 +209,7 @@ def get_ip_addr(qe, dns_server_to_send):
                 print "Next authoritative DNS name server IP is:", next_name_server_ip
 
                 try:
-                    return get_ip_addr(qe, next_name_server_ip)
+                    return get_ip_addr(qe, dns_server_to_send=next_name_server_ip)
                 except Exception, e:
                     if e.message != "authoritative DNS name server down":
                         raise e
@@ -214,7 +225,7 @@ def get_ip_addr(qe, dns_server_to_send):
         try:
             dns_qe = QE(dn=ns._nsdn)
             print "Finding IP address of authoritative DNS name server ", dns_qe
-            (dns_header, dns_rrs) = get_ip_addr(dns_qe, DNS_ROOT)
+            (dns_header, dns_rrs) = get_ip_addr(dns_qe)
         except Exception, e:
             if e.message != "authoritative DNS name server down":
                 raise e
@@ -259,7 +270,7 @@ while 1:
     signal.alarm(60)
 
     try:
-        (received_header, received_rrs) = get_ip_addr(query_qe, DNS_ROOT)  # Send iterative queries
+        (received_header, received_rrs) = get_ip_addr(query_qe)  # Send iterative queries
 
         signal.alarm(0)  # disable timeout alarm
 
