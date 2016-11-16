@@ -147,7 +147,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
         return return_header, return_rrs
 
     # if dns server to send is root, check whether parent domain of query exists in cache
-    if dns_server_to_send == ROOTNS_IN_ADDR:
+    if dns_server_to_send == ROOTNS_IN_ADDR and qe._dn.parent() is not None:
         dn_runner = qe._dn.parent()
         while dn_runner.parent() is not None:
             if dn_runner in nscache:
@@ -364,7 +364,11 @@ while 1:
         last_cname = received_rrs[i]._dn
 
     # if NS of parent domain of answer in cache, return it in authority section
-    parent = last_cname.parent()
+    if last_cname.parent() is not None:
+        parent = last_cname.parent()
+    else:
+        parent = "."
+
     authdomains = []
     print "\nAuthority section to send back to client in human readable form are:"
     if parent in nscache:
