@@ -130,7 +130,7 @@ cs = socket(AF_INET, SOCK_DGRAM)
 # to get the IP address of the domain name specified in the question entry
 def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
     if qe._dn in acache:
-        print "\nIP address of question entry found in cache: question = ", qe._dn
+        print "\nIP address of question entry found in cache: question =", qe._dn
         return_header = Header(randint(0, 65536), Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1, qr=True, aa=True)
         return_rrs = []
         for key in acache[qe._dn]._dict.keys():
@@ -151,13 +151,13 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
         dn_runner = qe._dn.parent()
         while dn_runner.parent() is not None:
             if dn_runner in nscache:
-                print "\nName server for parent domain found in cache: parent domain = ", dn_runner
+                print "\nName server for parent domain found in cache: parent domain =", dn_runner
                 for key in nscache[dn_runner].keys():
                     if key in acache:
                         for ip in acache[key]._dict.keys():
                             print "Next authoritative DNS name server domain is:", key
-                            print "Next authoritative DNS name server IP is:", ip.toNetwork
-                            return get_ip_addr(qe, ip.toNetwork())
+                            print "Next authoritative DNS name server IP is:", ip
+                            return get_ip_addr(qe, str(ip))
             dn_runner = dn_runner.parent()
 
     # create DNS query to be sent to authoritative DNS name server
