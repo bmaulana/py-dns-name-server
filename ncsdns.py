@@ -250,6 +250,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
     additional_rrs = response_rrs[-response_header._arcount:]
     tried = []
     for ns in authority_rrs:
+        # TODO check glue records from cache as well (maybe ns has a cached IP address in acache)
         for add in additional_rrs:
             if add._type == RR.TYPE_A and ns._nsdn == add._dn:
                 next_name_server_ip = inet_ntoa(add._inaddr)
@@ -284,6 +285,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
             print "\nCannot find IP address of ", dns_qe
             continue
 
+        # TODO add glue records to cache (as A records, acache)
         next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
         print "\nNext authoritative DNS name server domain is:", ns._nsdn
         print "Next authoritative DNS name server IP is:", next_name_server_ip
@@ -339,6 +341,7 @@ while 1:
             reply += rr.pack()
             # TODO if NS of lowest subdomain of answer in cache (e.g. b.c. for a.b.c.), return it in authority section
             # TODO return glue records for name servers mentioned in authority section (cache + lookup if not there)
+            # TODO remove records from cache when TTL over
         # print "\nReply to send back to client is:\n", hexdump(reply)
 
         logger.log(DEBUG2, "our reply in full:")
