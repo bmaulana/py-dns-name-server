@@ -250,38 +250,39 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
     additional_rrs = response_rrs[-response_header._arcount:]
     tried = []
     for ns in authority_rrs:
-        for add in additional_rrs:
-            if add._type == RR.TYPE_A and ns._nsdn == add._dn:
-                next_name_server_ip = inet_ntoa(add._inaddr)
-                print "Next authoritative DNS name server domain is:", ns._nsdn
-                print "Next authoritative DNS name server IP is:", next_name_server_ip
+        if ns._type == RR.TYPE_NS:
+            for add in additional_rrs:
+                if add._type == RR.TYPE_A and ns._nsdn == add._dn:
+                    next_name_server_ip = inet_ntoa(add._inaddr)
+                    print "Next authoritative DNS name server domain is:", ns._nsdn
+                    print "Next authoritative DNS name server IP is:", next_name_server_ip
 
-                try:
-                    return get_ip_addr(qe, dns_server_to_send=next_name_server_ip)
-                except Exception, e:
-                    if e.message != "authoritative DNS name server down":
-                        print "Unhandled Exception:", e
-                        print ""
-                        raise e
-                    print "\nauthoritative DNS name server down, trying next one"
-                    tried.append(ns)
-                    break
+                    try:
+                        return get_ip_addr(qe, dns_server_to_send=next_name_server_ip)
+                    except Exception, e:
+                        if e.message != "authoritative DNS name server down":
+                            print "Unhandled Exception:", e
+                            print ""
+                            raise e
+                        print "\nauthoritative DNS name server down, trying next one"
+                        tried.append(ns)
+                        break
 
-        if ns._nsdn in acache:
-            for ip in acache[ns._nsdn]._dict.keys():
-                print "Next authoritative DNS name server domain is:", ns._nsdn
-                print "Next authoritative DNS name server IP is:", ip
+            if ns._nsdn in acache:
+                for ip in acache[ns._nsdn]._dict.keys():
+                    print "Next authoritative DNS name server domain is:", ns._nsdn
+                    print "Next authoritative DNS name server IP is:", ip
 
-                try:
-                    return get_ip_addr(qe, dns_server_to_send=str(ip))
-                except Exception, e:
-                    if e.message != "authoritative DNS name server down":
-                        print "Unhandled Exception:", e
-                        print ""
-                        raise e
-                    print "\nauthoritative DNS name server down, trying next one"
-                    tried.append(ns)
-                    break
+                    try:
+                        return get_ip_addr(qe, dns_server_to_send=str(ip))
+                    except Exception, e:
+                        if e.message != "authoritative DNS name server down":
+                            print "Unhandled Exception:", e
+                            print ""
+                            raise e
+                        print "\nauthoritative DNS name server down, trying next one"
+                        tried.append(ns)
+                        break
 
     print "\nGlue record not found"
     for ns in authority_rrs:
