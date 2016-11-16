@@ -157,6 +157,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
                         for ip in acache[key]._dict.keys():
                             print "Next authoritative DNS name server domain is:", key
                             print "Next authoritative DNS name server IP is:", ip
+
                             try:
                                 return get_ip_addr(qe, dns_server_to_send=str(ip))
                             except Exception, e:
@@ -330,18 +331,38 @@ while 1:
 
         # create DNS response to client
         reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
-                              ancount=received_header._ancount, nscount=received_header._nscount,
-                              arcount=received_header._arcount, qr=True, aa=False, tc=False, rd=True, ra=True)
+                              ancount=received_header._ancount, qr=True, aa=False, tc=False, rd=True, ra=True)
         reply = reply_header.pack() + query_qe.pack()
         print "\nHeader to send back to client in human readable form is:\n", reply_header
         print "\nQE to send back to client in human readable form is:\n", query_qe
-        print "\nRRs to send back to client in human readable form are:"
-        for rr in received_rrs:
-            print rr
-            reply += rr.pack()
-            # TODO if NS of lowest subdomain of answer in cache (e.g. b.c. for a.b.c.), return it in authority section
-            # TODO return glue records for name servers mentioned in authority section (cache + lookup if not there)
-            # TODO remove records from cache when TTL over
+        print "\nAnswer section to send back to client in human readable form are:"
+        for i in range(received_header._ancount):
+            print received_rrs[i]
+            reply += received_rrs[i].pack()
+
+        # if NS of lowest subdomain of answer in cache (e.g. b.c. for a.b.c.), return it in authority section
+        parent = query_qe._dn.parent()
+        authdomains = []
+        print "\nAuthority section to send back to client in human readable form are:"
+        if parent in nscache:
+            for key in nscache[parent].keys():
+                authdomains.append(key)
+                rr = RR_NS(parent, nscache[parent][key]._expiration, key)
+                print rr
+                reply_header._nscount += 1
+                reply += rr.pack
+
+        # return glue records for name servers mentioned in authority section (cache + lookup if not there)
+        print "\nAdditional section to send back to client in human readable form are:"
+        for domain in authdomains:
+            if domain in acache:
+                for key in acache[domain]._dict.keys():
+                    rr = RR_A(domain, acache[parent]._dict[key]._expiration, inet_aton(key))
+                    print rr
+                    reply_header._arcount += 1
+                    reply += rr.pack
+
+        # TODO remove records from cache when TTL over
         # print "\nReply to send back to client is:\n", hexdump(reply)
 
         logger.log(DEBUG2, "our reply in full:")
