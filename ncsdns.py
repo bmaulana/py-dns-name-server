@@ -159,7 +159,7 @@ def get_ip_addr(qe, dns_server_to_send):
             print "\nTimeout, trying to resend query to same authoritative DNS name server"
             cs.settimeout(None)
             if i == 2:
-                raise Exception("authoritative DNS name server down")  # TODO handle this
+                raise Exception("authoritative DNS name server down")
 
     # print "\nResponse received from server is:\n", hexdump(response)
     # print "Response header received from DNS server is:\n", hexdump(response_header.pack())
@@ -186,29 +186,47 @@ def get_ip_addr(qe, dns_server_to_send):
         else:
             return response_header, response_rrs
 
-    next_name_server_ip = ""
     authority_rrs = response_rrs[:response_header._nscount]
     additional_rrs = response_rrs[-response_header._arcount:]
+    tried = []
     for ns in authority_rrs:
         for add in additional_rrs:
             if add._type == RR.TYPE_A and ns._nsdn == add._dn:
                 next_name_server_ip = inet_ntoa(add._inaddr)
                 print "Next authoritative DNS name server domain is:", ns._nsdn
                 print "Next authoritative DNS name server IP is:", next_name_server_ip
-                break
-        if next_name_server_ip != "":
-            break
 
-    if next_name_server_ip == "":
-        print "\nGlue record not found"
-        dns_qe = QE(dn=authority_rrs[0]._nsdn)
-        (dns_header, dns_rrs) = get_ip_addr(dns_qe, DNS_ROOT)  # get IP address of DNS name server without glue record
-        print "\nFinding IP address of authoritative DNS name server without glue record finished"
+                try:
+                    return get_ip_addr(qe, next_name_server_ip)
+                except Exception, e:
+                    if e.message != "authoritative DNS name server down":
+                        raise e
+                    print "authoritative DNS name server down, trying next one"
+                    tried.append(ns)
+                    break
+
+    print "\nGlue record not found"
+    for ns in authority_rrs:
+        if ns in tried:
+            continue
+
+        try:
+            dns_qe = QE(dn=ns._nsdn)
+            print "Finding IP address of authoritative DNS name server ", dns_qe
+            (dns_header, dns_rrs) = get_ip_addr(dns_qe, DNS_ROOT)
+        except Exception, e:
+            if e.message != "authoritative DNS name server down":
+                raise e
+            print "\nCannot find IP address of ", dns_qe
+            continue
+
         next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
-        print "Next authoritative DNS name server domain is:", ns._nsdn
+        print "\nNext authoritative DNS name server domain is:", ns._nsdn
         print "Next authoritative DNS name server IP is:", next_name_server_ip
+        return get_ip_addr(qe, next_name_server_ip)
 
-    return get_ip_addr(qe, next_name_server_ip)
+    print "\nERROR - Cannot continue DNS lookup (Authority section empty or all name servers specified down)"
+    raise Exception("authoritative DNS name server down")
 
 
 # Register a handler for signal timeout
@@ -272,4 +290,6 @@ while 1:
     except Exception, exc:
         if exc.message == "timeout":
             print "\n\nQUERY TIMEOUT\n\n"
+        else:
+            raise exc
         signal.alarm(0)  # disable timeout alarm
