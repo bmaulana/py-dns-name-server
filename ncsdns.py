@@ -129,7 +129,14 @@ cs = socket(AF_INET, SOCK_DGRAM)
 # recursive function which takes a question entry and sends recursive dns queries to other dns name servers
 # to get the IP address of the domain name specified in the question entry
 def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
-    # TODO if dns server to send is root, check whether sub-domain of query exists in cache
+    if qe._dn in acache:
+        return_header = Header(randint(0, 65536), Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=1, qr=True, aa=True)
+        return_rrs = []
+        for key in acache[qe._dn]._dict.keys():
+            return_rrs += RR_A(qe._dn, acache[qe._dn]._dict[key]._expiration, key)
+            return_header._ancount += 1
+        return return_header, return_rrs
+
     if qe._dn in cnamecache:
         print "\nCNAME found - starting search for IP address of canonical name ", cnamecache[qe._dn]._cname
         cname_qe = QE(dn=cnamecache[qe._dn]._cname)
@@ -137,6 +144,8 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
         return_header._ancount += 1
         return_rrs.insert(0, RR_CNAME(qe._dn, cnamecache[qe._dn]._expiration, cnamecache[qe._dn]._cname))
         return return_header, return_rrs
+
+    # TODO if dns server to send is root, check whether sub-domain of query exists in cache
 
     # create DNS query to be sent to authoritative DNS name server
     iq_id = randint(0, 65536)  # random 16 bit int
@@ -175,7 +184,6 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
     for i in range(response_header._ancount + response_header._nscount + response_header._arcount):
         (rrec, offset_inc) = RR.fromData(response, offset)
         print rrec
-        print "TTL=", rrec._ttl
 
         response_rrs.append(rrec)
         if rrec._type == RR.TYPE_A:
