@@ -350,7 +350,7 @@ while 1:
                 rr = RR_NS(parent, nscache[parent][key]._expiration, key)
                 print rr
                 reply_header._nscount += 1
-                reply.append(rr.pack)
+                reply += rr.pack()
 
         # return glue records for name servers mentioned in authority section (cache + lookup if not there)
         print "\nAdditional section to send back to client in human readable form are:"
@@ -360,7 +360,7 @@ while 1:
                     rr = RR_A(domain, acache[parent]._dict[key]._expiration, inet_aton(key))
                     print rr
                     reply_header._arcount += 1
-                    reply.append(rr.pack)
+                    reply += rr.pack()
 
         # TODO remove records from cache when TTL over
         # print "\nReply to send back to client is:\n", hexdump(reply)
