@@ -370,7 +370,8 @@ while 1:
                     reply += rr.pack()
             else:
                 print "\nGlue record not found in cache - Sending query"
-                (glue_header, glue_rrs) = get_ip_addr(domain)
+                glue_qe = QE(dn=domain)
+                (glue_header, glue_rrs) = get_ip_addr(glue_qe)
                 print "\nGlue record found"
 
                 for i in range(glue_header._ancount):
