@@ -181,7 +181,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
         if rrec._type == RR.TYPE_CNAME:
             cnamecache[rrec._dn] = CnameCacheEntry(rrec._cname, expiration=rrec._ttl)
         if rrec._type == RR.TYPE_NS:
-            nscache[rrec._dn] = OrderedDict([rrec._nsdn, CacheEntry(expiration=rrec._ttl, authoritative=True)])
+            nscache[rrec._dn] = OrderedDict([(rrec._nsdn, CacheEntry(expiration=rrec._ttl, authoritative=True))])
 
         offset += offset_inc
 
