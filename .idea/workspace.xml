@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c9573d26-bea6-43b8-bc2b-91d8a0c498b5" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ncsdns.py" afterPath="$PROJECT_DIR$/ncsdns.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="py-dns-name-server.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,41 +26,11 @@
       <file leaf-file-name="ncsdns.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ncsdns.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="372">
-              <caret line="282" column="24" selection-start-line="282" selection-start-column="24" selection-end-line="282" selection-end-column="24" />
+            <state relative-caret-position="154">
+              <caret line="359" column="55" selection-start-line="359" selection-start-column="55" selection-end-line="359" selection-end-column="55" />
               <folding>
                 <element signature="e#19#40#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Header.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/gz01/dnslib/Header.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1980">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="collections_backport.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/gz01/collections_backport.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="110">
-              <caret line="11" column="6" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="_socket.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/.PyCharm2016.2/system/python_stubs/-762174762/_socket.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2282">
-              <caret line="502" column="8" selection-start-line="502" selection-start-column="8" selection-end-line="502" selection-end-column="8" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -75,31 +45,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RR.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/gz01/dnslib/RR.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3192">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="QE.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/gz01/dnslib/QE.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-750">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="types.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gz01/inetlib/types.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1210">
+            <state relative-caret-position="1672">
               <caret line="79" column="13" selection-start-line="79" selection-start-column="13" selection-end-line="79" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RR.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gz01/dnslib/RR.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -500,6 +460,103 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/ncsdns.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7766">
+          <caret line="353" column="29" selection-start-line="353" selection-start-column="29" selection-end-line="353" selection-end-column="29" />
+          <folding>
+            <element signature="e#19#40#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cw2-part1.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="11088">
+          <caret line="504" column="52" selection-start-line="504" selection-start-column="52" selection-end-line="504" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gz01/inetlib/types.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1672">
+          <caret line="79" column="13" selection-start-line="79" selection-start-column="13" selection-end-line="79" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gz01/dnslib/RR.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ncsdns.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#19#40#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gz01/dnslib/Header.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gz01/collections_backport.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="11" column="6" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2016.2/system/python_stubs/-762174762/_socket.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="11044">
+          <caret line="502" column="8" selection-start-line="502" selection-start-column="8" selection-end-line="502" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cw2-part1.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="11088">
+          <caret line="504" column="52" selection-start-line="504" selection-start-column="52" selection-end-line="504" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gz01/dnslib/RR.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gz01/dnslib/QE.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gz01/inetlib/types.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1672">
+          <caret line="79" column="13" selection-start-line="79" selection-start-column="13" selection-end-line="79" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ncsdns.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
@@ -528,11 +585,39 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/gz01/inetlib/types.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python27/Lib/multiprocessing/process.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="754">
+          <caret line="138" column="8" selection-start-line="138" selection-start-column="8" selection-end-line="138" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2016.2/system/python_stubs/-762174762/_socket.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="11044">
+          <caret line="502" column="8" selection-start-line="502" selection-start-column="8" selection-end-line="502" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gz01/dnslib/QE.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gz01/dnslib/Header.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -548,49 +633,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python27/Lib/multiprocessing/process.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="754">
-          <caret line="138" column="8" selection-start-line="138" selection-start-column="8" selection-end-line="138" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.2/system/python_stubs/-762174762/_socket.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2282">
-          <caret line="502" column="8" selection-start-line="502" selection-start-column="8" selection-end-line="502" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gz01/dnslib/QE.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-750">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gz01/dnslib/Header.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1980">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/gz01/collections_backport.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="110">
           <caret line="11" column="6" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/gz01/dnslib/RR.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3192">
+        <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
@@ -598,7 +650,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/gz01/inetlib/types.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1210">
+        <state relative-caret-position="1672">
           <caret line="79" column="13" selection-start-line="79" selection-start-column="13" selection-end-line="79" selection-end-column="13" />
           <folding />
         </state>
@@ -606,8 +658,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ncsdns.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="372">
-          <caret line="282" column="24" selection-start-line="282" selection-start-column="24" selection-end-line="282" selection-end-column="24" />
+        <state relative-caret-position="154">
+          <caret line="359" column="55" selection-start-line="359" selection-start-column="55" selection-end-line="359" selection-end-column="55" />
           <folding>
             <element signature="e#19#40#0" expanded="true" />
           </folding>
