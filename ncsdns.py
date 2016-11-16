@@ -188,6 +188,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
                 response_header = Header.fromData(response)
                 if response_header._id == iq_id:
                     break
+            break
 
         # If no response from server
         except timeout:
