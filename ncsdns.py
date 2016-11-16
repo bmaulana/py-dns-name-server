@@ -161,7 +161,8 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
                                 return get_ip_addr(qe, dns_server_to_send=str(ip))
                             except Exception, e:
                                 if e.message != "authoritative DNS name server down":
-                                    print "\nUnhandled Exception:", e
+                                    print "Unhandled Exception:", e
+                                    print ""
                                     raise e
                                 print "\nauthoritative DNS name server down, trying next one"
                                 break
@@ -259,7 +260,8 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
                     return get_ip_addr(qe, dns_server_to_send=next_name_server_ip)
                 except Exception, e:
                     if e.message != "authoritative DNS name server down":
-                        print "\nUnhandled Exception:", e
+                        print "Unhandled Exception:", e
+                        print ""
                         raise e
                     print "\nauthoritative DNS name server down, trying next one"
                     tried.append(ns)
@@ -276,7 +278,8 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
             (dns_header, dns_rrs) = get_ip_addr(dns_qe)
         except Exception, e:
             if e.message != "authoritative DNS name server down":
-                print "\nUnhandled Exception:", e
+                print "Unhandled Exception:", e
+                print ""
                 raise e
             print "\nCannot find IP address of ", dns_qe
             continue
@@ -351,5 +354,6 @@ while 1:
         if exc.message == "timeout":
             print "\n\nQUERY TIMEOUT\n\n"
         else:
-            print "\nUnhandled Exception:", exc
+            print "Unhandled Exception:", exc
+            print ""
             raise exc
