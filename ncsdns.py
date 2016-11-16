@@ -357,7 +357,7 @@ while 1:
         for domain in authdomains:
             if domain in acache:
                 for key in acache[domain]._dict.keys():
-                    rr = RR_A(domain, acache[parent]._dict[key]._expiration, inet_aton(key))
+                    rr = RR_A(domain, acache[domain]._dict[key]._expiration, inet_aton(key))
                     print rr
                     reply_header._arcount += 1
                     reply += rr.pack()
