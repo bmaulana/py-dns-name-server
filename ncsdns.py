@@ -170,6 +170,7 @@ def get_ip_addr(qe, dns_server_to_send):
     for i in range(response_header._ancount + response_header._nscount + response_header._arcount):
         response_rr = RR.fromData(response, offset)
         print response_rr[0]
+        print "TTL=", response_rr[0]._ttl
         response_rrs.append(response_rr[0])
         offset += response_rr[1]
 
@@ -273,7 +274,8 @@ while 1:
         for rr in received_rrs:
             print rr
             reply += rr.pack()
-            # TODO return glue records for name servers mentioned in authority section
+            # TODO if NS of lowest subdomain of answer in cache (e.g. b.c. for a.b.c.), return it in authority section
+            # TODO return glue records for name servers mentioned in authority section (cache + lookup if not there)
         # print "\nReply to send back to client is:\n", hexdump(reply)
 
         # TODO: caching
