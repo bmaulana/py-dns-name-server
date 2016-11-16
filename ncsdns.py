@@ -286,7 +286,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
 
     print "\nGlue record not found"
     for ns in authority_rrs:
-        if ns in tried:
+        if ns._type != RR.TYPE_NS or ns in tried:
             continue
 
         try:
@@ -337,6 +337,7 @@ while 1:
 
     try:
         (received_header, received_rrs) = get_ip_addr(query_qe)  # Send iterative queries
+        signal.alarm(0)  # disable timeout alarm
 
         # create DNS response to client
         reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
@@ -380,13 +381,14 @@ while 1:
         # send DNS response to client
         ss.sendto(reply, address)
 
-        signal.alarm(0)  # disable timeout alarm
         print "\n\nEND QUERY\n\n"
 
     except Exception, exc:
         signal.alarm(0)  # disable timeout alarm
         if exc.message == "timeout":
             print "\n\nQUERY TIMEOUT\n\n"
+        elif exc.message == "authoritative DNS name server down":
+            print "\n\nQUERY FAILED\n\n"
         else:
             print "Unhandled Exception:", exc
             print ""
