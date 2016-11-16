@@ -332,7 +332,7 @@ while 1:
         # create DNS response to client
         reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
                               ancount=received_header._ancount, qr=True, aa=False, tc=False, rd=True, ra=True)
-        reply = reply_header.pack() + query_qe.pack()
+        reply = query_qe.pack()
         print "\nHeader to send back to client in human readable form is:\n", reply_header
         print "\nQE to send back to client in human readable form is:\n", query_qe
         print "\nAnswer section to send back to client in human readable form are:"
@@ -357,10 +357,12 @@ while 1:
         for domain in authdomains:
             if domain in acache:
                 for key in acache[domain]._dict.keys():
-                    rr = RR_A(domain, acache[domain]._dict[key]._expiration, inet_aton(key))
+                    rr = RR_A(domain, acache[domain]._dict[key]._expiration, key.toNetwork())
                     print rr
                     reply_header._arcount += 1
                     reply += rr.pack()
+
+        reply = reply_header.pack() + reply
 
         # TODO remove records from cache when TTL over
         # print "\nReply to send back to client is:\n", hexdump(reply)
