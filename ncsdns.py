@@ -132,7 +132,8 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
     # TODO if dns server to send is root, check whether sub-domain of query exists in cache
     if qe._dn in cnamecache:
         print "\nCNAME found - starting search for IP address of canonical name ", cnamecache[qe._dn]._cname
-        (return_header, return_rrs) = get_ip_addr(cnamecache[qe._dn]._cname)
+        cname_qe = QE(dn=cnamecache[qe._dn]._cname)
+        (return_header, return_rrs) = get_ip_addr(cname_qe)
         return_header._ancount += 1
         return_rrs.insert(0, RR_CNAME(qe._dn, cnamecache[qe._dn]._expiration, cnamecache[qe._dn]._cname))
         return return_header, return_rrs
@@ -195,8 +196,8 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
     # Else, check authority & additional section to determine next DNS name server to send query.
     if response_header._ancount > 0:
         if response_rrs[0]._type == RR.TYPE_CNAME:
-            cname_qe = QE(dn=response_rrs[0]._cname)
             print "CNAME found - starting search for IP address of canonical name ", response_rrs[0]._cname
+            cname_qe = QE(dn=response_rrs[0]._cname)
             (return_header, return_rrs) = get_ip_addr(cname_qe)
             return_header._ancount += 1
             return_rrs.insert(0, response_rrs[0])
@@ -268,7 +269,7 @@ while 1:
     print "Query header received from client in human readable form is:\n", query_header
     query_qe = QE.fromData(data, 12)
     # print "\nQuery QE received from client is:\n", hexdump(query_qe.pack())
-    print "Query QE received from client in human readable form is:\n", query_qe
+    print "\nQuery QE received from client in human readable form is:\n", query_qe
     print "\nClient's address is:\n", address
 
     # start timeout timer
