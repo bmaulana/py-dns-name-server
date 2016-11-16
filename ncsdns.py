@@ -206,6 +206,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
         print rrec
         response_rrs.append(rrec)
 
+        # Save to cache
         if rrec._type == RR.TYPE_A:
             if rrec._dn not in acache:
                 if norr < response_header._ancount:
@@ -296,7 +297,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
                 print "Unhandled Exception:", e
                 print ""
                 raise e
-            print "\nCannot find IP address of ", dns_qe
+            print "\nCannot find IP address of ", ns._nsdn
             continue
 
         next_name_server_ip = inet_ntoa(dns_rrs[0]._inaddr)
@@ -382,8 +383,6 @@ while 1:
                     reply += rr.pack()
 
         reply = reply_header.pack() + reply
-
-        # TODO remove records from cache when TTL over
 
         logger.log(DEBUG2, "our reply in full:")
         logger.log(DEBUG2, hexdump(reply))
