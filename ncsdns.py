@@ -157,7 +157,14 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
                         for ip in acache[key]._dict.keys():
                             print "Next authoritative DNS name server domain is:", key
                             print "Next authoritative DNS name server IP is:", ip
-                            return get_ip_addr(qe, str(ip))
+                            try:
+                                return get_ip_addr(qe, dns_server_to_send=str(ip))
+                            except Exception, e:
+                                if e.message != "authoritative DNS name server down":
+                                    print "\nUnhandled Exception:", e
+                                    raise e
+                                print "\nauthoritative DNS name server down, trying next one"
+                                break
             dn_runner = dn_runner.parent()
 
     # create DNS query to be sent to authoritative DNS name server
@@ -252,8 +259,9 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
                     return get_ip_addr(qe, dns_server_to_send=next_name_server_ip)
                 except Exception, e:
                     if e.message != "authoritative DNS name server down":
+                        print "\nUnhandled Exception:", e
                         raise e
-                    print "authoritative DNS name server down, trying next one"
+                    print "\nauthoritative DNS name server down, trying next one"
                     tried.append(ns)
                     break
 
@@ -268,6 +276,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
             (dns_header, dns_rrs) = get_ip_addr(dns_qe)
         except Exception, e:
             if e.message != "authoritative DNS name server down":
+                print "\nUnhandled Exception:", e
                 raise e
             print "\nCannot find IP address of ", dns_qe
             continue
@@ -338,8 +347,9 @@ while 1:
         print "\n\nEND QUERY\n\n"
 
     except Exception, exc:
+        signal.alarm(0)  # disable timeout alarm
         if exc.message == "timeout":
             print "\n\nQUERY TIMEOUT\n\n"
         else:
+            print "\nUnhandled Exception:", exc
             raise exc
-        signal.alarm(0)  # disable timeout alarm
