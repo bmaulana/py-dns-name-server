@@ -339,9 +339,10 @@ while 1:
         for i in range(received_header._ancount):
             print received_rrs[i]
             reply += received_rrs[i].pack()
+            last_cname = received_rrs[i]._dn
 
         # if NS of lowest subdomain of answer in cache (e.g. b.c. for a.b.c.), return it in authority section
-        parent = query_qe._dn.parent()
+        parent = last_cname.parent()
         authdomains = []
         print "\nAuthority section to send back to client in human readable form are:"
         if parent in nscache:
