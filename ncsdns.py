@@ -130,6 +130,12 @@ cs = socket(AF_INET, SOCK_DGRAM)
 # to get the IP address of the domain name specified in the question entry
 def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
     # TODO if dns server to send is root, check whether sub-domain of query exists in cache
+    if qe._dn in cnamecache:
+        print "\nCNAME found - starting search for IP address of canonical name ", cnamecache[qe._dn]._cname
+        (return_header, return_rrs) = get_ip_addr(cnamecache[qe._dn]._cname)
+        return_header._ancount += 1
+        return_rrs.insert(0, RR_CNAME(qe._dn, cnamecache[qe._dn]._expiration, cnamecache[qe._dn]._cname))
+        return return_header, return_rrs
 
     # create DNS query to be sent to authoritative DNS name server
     iq_id = randint(0, 65536)  # random 16 bit int
@@ -190,8 +196,8 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
     if response_header._ancount > 0:
         if response_rrs[0]._type == RR.TYPE_CNAME:
             cname_qe = QE(dn=response_rrs[0]._cname)
-            print "CNAME found - starting search for IP address of alias ", response_rrs[0]._cname
-            (return_header, return_rrs) = get_ip_addr(cname_qe)  # get IP address of CNAME
+            print "CNAME found - starting search for IP address of canonical name ", response_rrs[0]._cname
+            (return_header, return_rrs) = get_ip_addr(cname_qe)
             return_header._ancount += 1
             return_rrs.insert(0, response_rrs[0])
             return return_header, return_rrs
@@ -288,9 +294,6 @@ while 1:
             # TODO if NS of lowest subdomain of answer in cache (e.g. b.c. for a.b.c.), return it in authority section
             # TODO return glue records for name servers mentioned in authority section (cache + lookup if not there)
         # print "\nReply to send back to client is:\n", hexdump(reply)
-
-        # TODO: caching
-        # TODO: work through page 9 requirements.
 
         logger.log(DEBUG2, "our reply in full:")
         logger.log(DEBUG2, hexdump(reply))
