@@ -306,7 +306,7 @@ def get_ip_addr(qe, dns_server_to_send=ROOTNS_IN_ADDR):
         print "Next authoritative DNS name server IP is:", next_name_server_ip
         return get_ip_addr(qe, next_name_server_ip)
 
-    print "\nERROR - Cannot continue DNS lookup (Authority section empty or all name servers specified down)"
+    print "\nDNS lookup failed (Authority section empty or all name servers specified down)"
     raise Exception("authoritative DNS name server down")
 
 
@@ -339,50 +339,6 @@ while 1:
         (received_header, received_rrs) = get_ip_addr(query_qe)  # Send iterative queries
         signal.alarm(0)  # disable timeout alarm
 
-        # create DNS response to client
-        reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
-                              ancount=received_header._ancount, qr=True, aa=False, tc=False, rd=True, ra=True)
-        reply = query_qe.pack()
-        print "\nHeader to send back to client in human readable form is:\n", reply_header
-        print "\nQE to send back to client in human readable form is:\n", query_qe
-        print "\nAnswer section to send back to client in human readable form are:"
-        for i in range(received_header._ancount):
-            print received_rrs[i]
-            reply += received_rrs[i].pack()
-            last_cname = received_rrs[i]._dn
-
-        # if NS of parent domain of answer in cache, return it in authority section
-        parent = last_cname.parent()
-        authdomains = []
-        print "\nAuthority section to send back to client in human readable form are:"
-        if parent in nscache:
-            for key in nscache[parent].keys():
-                authdomains.append(key)
-                rr = RR_NS(parent, nscache[parent][key]._expiration, key)
-                print rr
-                reply_header._nscount += 1
-                reply += rr.pack()
-
-        # return glue records for name servers mentioned in authority section (if exist in cache)
-        print "\nAdditional section to send back to client in human readable form are:"
-        for domain in authdomains:
-            if domain in acache:
-                for key in acache[domain]._dict.keys():
-                    rr = RR_A(domain, acache[domain]._dict[key]._expiration, key.toNetwork())
-                    print rr
-                    reply_header._arcount += 1
-                    reply += rr.pack()
-
-        reply = reply_header.pack() + reply
-
-        logger.log(DEBUG2, "our reply in full:")
-        logger.log(DEBUG2, hexdump(reply))
-
-        # send DNS response to client
-        ss.sendto(reply, address)
-
-        print "\n\nEND QUERY\n\n"
-
     except Exception, exc:
         signal.alarm(0)  # disable timeout alarm
         if exc.message == "timeout":
@@ -393,3 +349,72 @@ while 1:
             print "Unhandled Exception:", exc
             print ""
             raise exc
+        continue
+
+    # create DNS response to client
+    reply_header = Header(query_header._id, Header.OPCODE_QUERY, Header.RCODE_NOERR, qdcount=query_header._qdcount,
+                          ancount=received_header._ancount, qr=True, aa=False, tc=False, rd=True, ra=True)
+    reply = query_qe.pack()
+    print "\nHeader to send back to client in human readable form is:\n", reply_header
+    print "\nQE to send back to client in human readable form is:\n", query_qe
+    print "\nAnswer section to send back to client in human readable form are:"
+    for i in range(received_header._ancount):
+        print received_rrs[i]
+        reply += received_rrs[i].pack()
+        last_cname = received_rrs[i]._dn
+
+    # if NS of parent domain of answer in cache, return it in authority section
+    parent = last_cname.parent()
+    authdomains = []
+    print "\nAuthority section to send back to client in human readable form are:"
+    if parent in nscache:
+        for key in nscache[parent].keys():
+            authdomains.append(key)
+            rr = RR_NS(parent, nscache[parent][key]._expiration, key)
+            print rr
+            reply_header._nscount += 1
+            reply += rr.pack()
+
+    # return glue records for name servers mentioned in authority section (if exist in cache)
+    print "\nAdditional section to send back to client in human readable form are:"
+    for domain in authdomains:
+        if domain in acache:
+            for key in acache[domain]._dict.keys():
+                rr = RR_A(domain, acache[domain]._dict[key]._expiration, key.toNetwork())
+                print rr
+                reply_header._arcount += 1
+                reply += rr.pack()
+        else:
+            print "\nGlue record not found in cache - Sending query for ", domain
+            glue_qe = QE(dn=domain)
+            signal.alarm(2)
+
+            try:
+                (glue_header, glue_rrs) = get_ip_addr(glue_qe)
+                print "\nGlue record found"
+                signal.alarm(0)
+
+                for i in range(glue_header._ancount):
+                    rr = RR_A(domain, glue_rrs[i]._ttl, glue_rrs[i]._inaddr)
+                    print rr
+                    reply_header._arcount += 1
+                    reply += rr.pack()
+
+            except Exception, exc:
+                signal.alarm(0)  # disable timeout alarm
+                if exc.message == "timeout" or exc.message == "authoritative DNS name server down":
+                    print "\nCannot find glue record for ", domain
+                else:
+                    print "Unhandled Exception:", exc
+                    print ""
+                    raise exc
+
+    reply = reply_header.pack() + reply
+
+    logger.log(DEBUG2, "our reply in full:")
+    logger.log(DEBUG2, hexdump(reply))
+
+    # send DNS response to client
+    ss.sendto(reply, address)
+
+    print "\n\nEND QUERY\n\n"
